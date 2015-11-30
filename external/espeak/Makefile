@@ -2,7 +2,7 @@
 
 include ../../makefile.defs
 
-CPPFLAGS = -I ../../num -I ../../kar -I ../../stat -I ../../sys -I ../../dwsys
+CPPFLAGS = -I ../../num -I ../../kar -I ../../stat -I ../../sys -I ../../dwsys -Wno-error=missing-prototypes
 
 OBJECTS =  compiledict.o dictionary.o intonation.o klatt.o  \
 	numbers.o phonemelist.o readclause.o setlengths.o  \
