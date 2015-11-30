@@ -62,7 +62,7 @@
 	#endif
 	#if defined (__OpenBSD__) || defined (__NetBSD__)
 		#include <soundcard.h>
-	#else
+	#elif !defined (EMSCRIPTEN)
 		#include <sys/soundcard.h>
 	#endif
 	#include <errno.h>
@@ -355,7 +355,7 @@ static bool flush () {
 	#endif
 	} else {
 	#if defined (macintosh)
-	#elif defined (linux)
+	#elif defined (linux) && !defined(EMSCRIPTEN)
 		
 		/*
 		 * As on Sun.
@@ -1228,7 +1228,7 @@ void MelderAudio_play16 (int16_t *buffer, long sampleRate, long numberOfSamples,
 	#endif
 	} else {
 		#if defined (macintosh)
-		#elif defined (linux)
+		#elif defined (linux) && !defined (EMSCRIPTEN)
 			try {
 				/* Big-endian version added by Stefan de Konink, Nov 29, 2007 */
 				#if __BYTE_ORDER == __BIG_ENDIAN
