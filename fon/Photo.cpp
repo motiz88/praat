@@ -26,7 +26,7 @@
 	#include "macport_on.h"
 	#include <Cocoa/Cocoa.h>
 	#include "macport_off.h"
-#elif defined (linux)
+#elif defined (linux) && !defined (EMSCRIPTEN)
 	#include <cairo/cairo.h>
 #endif
 
@@ -102,7 +102,9 @@ Photo Photo_createSimple (long numberOfRows, long numberOfColumns) {
 
 Photo Photo_readFromImageFile (MelderFile file) {
 	try {
-		#if defined (linux)
+		#if defined (EMSCRIPTEN)
+			Melder_throw (U"Unsupported under Emscripten");
+		#elif defined (linux)
 			cairo_surface_t *surface = cairo_image_surface_create_from_png (Melder_peek32to8 (file -> path));
 			//if (cairo_surface_status)
 			//	Melder_throw (U"Error opening PNG file.");
@@ -222,7 +224,7 @@ Photo Photo_readFromImageFile (MelderFile file) {
 	}
 #endif
 
-#ifdef linux
+#if defined (linux) && !defined (EMSCRIPTEN)
 	static void _lin_saveAsImageFile (Photo me, MelderFile file, const char32 *which) {
 		cairo_format_t format = CAIRO_FORMAT_ARGB32;
 		long bytesPerRow = cairo_format_stride_for_width (format, my nx);   // likely to be my nx * 4
@@ -339,6 +341,8 @@ void Photo_saveAsPNG (Photo me, MelderFile file) {
 		_win_saveAsImageFile (me, file, U"image/png");
 	#elif defined (macintosh)
 		_mac_saveAsImageFile (me, file, kUTTypePNG);
+	#elif defined (EMSCRIPTEN)
+		Melder_throw (U"Unsupported under Emscripten");
 	#elif defined (linux)
 		_lin_saveAsImageFile (me, file, U"image/png");
 	#endif
@@ -349,6 +353,8 @@ void Photo_saveAsTIFF (Photo me, MelderFile file) {
 		_win_saveAsImageFile (me, file, U"image/tiff");
 	#elif defined (macintosh)
 		_mac_saveAsImageFile (me, file, kUTTypeTIFF);
+	#elif defined (EMSCRIPTEN)
+		Melder_throw (U"Unsupported under Emscripten");
 	#else
 		(void) me;
 		(void) file;
@@ -360,6 +366,8 @@ void Photo_saveAsGIF (Photo me, MelderFile file) {
 		_win_saveAsImageFile (me, file, U"image/gif");
 	#elif defined (macintosh)
 		_mac_saveAsImageFile (me, file, kUTTypeGIF);
+	#elif defined (EMSCRIPTEN)
+		Melder_throw (U"Unsupported under Emscripten");		
 	#else
 		(void) me;
 		(void) file;
@@ -371,6 +379,8 @@ void Photo_saveAsWindowsBitmapFile (Photo me, MelderFile file) {
 		_win_saveAsImageFile (me, file, U"image/bmp");
 	#elif defined (macintosh)
 		_mac_saveAsImageFile (me, file, kUTTypeBMP);
+	#elif defined (EMSCRIPTEN)
+		Melder_throw (U"Unsupported under Emscripten");		
 	#else
 		(void) me;
 		(void) file;
