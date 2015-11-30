@@ -65,7 +65,7 @@
 	#include <fcntl.h>
 	#if defined (__OpenBSD__) || defined (__NetBSD__)
 		#include <soundcard.h>
-	#else
+	#elif !defined (EMSCRIPTEN)
 		#include <sys/soundcard.h>
 	#endif
 	#include <sys/ioctl.h>   /* ioctl */
@@ -248,7 +248,7 @@ autoSound Sound_recordFixedTime (int inputSource, double gain, double balance, d
 				}
 				/* The device immediately started recording into its buffer, but probably at the wrong rate etc. */
 				/* Pause and flush this rubbish. */
-				#if defined (linux)
+				#if defined (linux) && !defined (EMSCRIPTEN)
 					ioctl (fd, SNDCTL_DSP_RESET, nullptr);
 				#endif
 			#endif
@@ -262,7 +262,7 @@ autoSound Sound_recordFixedTime (int inputSource, double gain, double balance, d
 			streamParameters. device = inputSource - 1;
 		} else {
 			#if defined (macintosh)
-			#elif defined (linux)
+			#elif defined (linux) && !defined (EMSCRIPTEN)
 				fd_mixer = open ("/dev/mixer", O_WRONLY);		
 				if (fd_mixer == -1)
 					Melder_throw (U"Cannot open /dev/mixer.");
@@ -279,7 +279,7 @@ autoSound Sound_recordFixedTime (int inputSource, double gain, double balance, d
 		} else {
 			#if defined (macintosh) || defined (_WIN32)
 				/* Taken from Audio Control Panel. */
-			#elif defined (linux)
+			#elif defined (linux) && !defined (EMSCRIPTEN)
 				val = (gain <= 0.0 ? 0 : gain >= 1.0 ? 100 : floor (gain * 100 + 0.5));  
 				balance = balance <= 0 ? 0 : balance >= 1 ? 1 : balance;
 				if (balance >= 0.5) {
@@ -308,7 +308,7 @@ autoSound Sound_recordFixedTime (int inputSource, double gain, double balance, d
 			// Set while opening.
 		} else {
 			#if defined (macintosh)
-			#elif defined (linux)
+			#elif defined (linux) && !defined (EMSCRIPTEN)
 				int sampleRate_int = (int) sampleRate;
 				if (ioctl (fd, SNDCTL_DSP_SPEED, & sampleRate_int) == -1)
 					Melder_throw (U"Cannot set sampling frequency to ", sampleRate, U" Hz.");
@@ -323,7 +323,7 @@ autoSound Sound_recordFixedTime (int inputSource, double gain, double balance, d
 			streamParameters. channelCount = 1;
 		} else {
 			#if defined (macintosh)
-			#elif defined (linux)
+			#elif defined (linux) && !defined (EMSCRIPTEN)
 				val = 1;
 				if (ioctl (fd, SNDCTL_DSP_CHANNELS, & val) == -1)
 					Melder_throw (U"Cannot set to mono.");
@@ -338,7 +338,7 @@ autoSound Sound_recordFixedTime (int inputSource, double gain, double balance, d
 			streamParameters. sampleFormat = paInt16;
 		} else {
 			#if defined (macintosh)
-			#elif defined (linux)
+			#elif defined (linux) && !defined (EMSCRIPTEN)
 				#if __BYTE_ORDER == __BIG_ENDIAN
 					val = AFMT_S16_BE;
 				#else
