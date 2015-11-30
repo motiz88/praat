@@ -39,8 +39,7 @@ char dictionary_name[40];
 
 extern char *print_dictionary_flags(unsigned int *flags);
 extern char *DecodeRule(const char *group_chars, int group_length, char *rule, int control);
-int HashDictionary(const char *string);
-int IsVowel(Translator *tr, int letter);
+
 // accented characters which indicate (in some languages) the start of a separate syllable
 //static const unsigned short diereses_list[7] = {L'ä',L'ë',L'ï',L'ö',L'ü',L'ÿ',0};
 static const unsigned short diereses_list[7] = {0xe4,0xeb,0xef,0xf6,0xfc,0xff,0};
