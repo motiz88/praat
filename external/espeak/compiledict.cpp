@@ -34,6 +34,12 @@
 extern void Write4Bytes(FILE *f, int value);
 int HashDictionary(const char *string);
 
+const char *LookupMnemName(MNEM_TAB *table, const int value);
+char *print_dictionary_flags(unsigned int *flags);
+char *DecodeRule(const char *group_chars, int group_length, char *rule, int control);
+int isHexDigit(int c);
+int string_sorter(char **a, char **b);
+
 static FILE *f_log = NULL;
 extern char *dir_dictionary;
 
