@@ -52,7 +52,7 @@ int Gui_getResolution (GuiObject widget) {
 		#elif gtk
 			resolution = gdk_screen_get_resolution (gdk_display_get_default_screen (gtk_widget_get_display (GTK_WIDGET (widget))));
 		#else
-			Melder_fatal ("Gui_getResolution: unknown platform.");
+			Melder_fatal (U"Gui_getResolution: unknown platform.");
 		#endif
 	}
 	return 100;   // in conformance with most other applications; and so that fonts always look the same size in the Demo window
