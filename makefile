@@ -63,4 +63,4 @@ clean:
 	$(MAKE) -C artsynth clean
 	$(MAKE) -C contrib/ola clean
 	$(MAKE) -C main clean
-	$(RM) praat
+	$(RM) $(EXECUTABLE)
