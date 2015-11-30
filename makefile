@@ -9,16 +9,6 @@
 # Perhaps that file requires some editing.
 include makefile.defs
 
-define max_args
-  $(eval _args:=)
-  $(foreach obj,$3,$(eval _args+=$(obj))$(if $(word $2,$(_args)),$1$(_args)$(EOL)$(eval _args:=)))
-  $(if $(_args),$1$(_args))
-endef
-define EOL
-
-
-endef
-
 # Makes the Praat executable in the source directory.
 all:
 	$(MAKE) -C external/gsl
