@@ -215,7 +215,7 @@ clean:
 libgsl.a: $(OBJECTS)
 	touch libgsl.a
 	rm libgsl.a
-	$(AR) cq libgsl.a $(OBJECTS)
+	@$(call max_args,$(AR) cq libgsl.a,20,$(OBJECTS))
 	$(RANLIB) libgsl.a
 
 $(OBJECTS): *.h
