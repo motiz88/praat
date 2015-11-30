@@ -603,7 +603,7 @@ void Melder_trace (const char *fileName, int lineNumber, const char *functionNam
 	Melder_trace_close (f);
 }
 
-#if defined (linux) && !defined (EMSCRIPTEN)
+#if defined (linux) && !defined (__EMSCRIPTEN__)
 static void theGtkLogHandler (const gchar *log_domain, GLogLevelFlags log_level, const gchar *message, gpointer unused_data) {
 	FILE *f = Melder_trace_open (nullptr, 0, "GTK");
 	fprintf (f, "%s", message);
@@ -631,7 +631,7 @@ void Melder_setTracing (bool tracing) {
 			U" at ", Melder_peek8to32 (ctime (& today))
 		);
 	Melder_isTracing = tracing;
-	#if defined (linux) && !defined (EMSCRIPTEN)
+	#if defined (linux) && !defined (__EMSCRIPTEN__)
 		static guint handler_id1, handler_id2, handler_id3;
 		if (tracing) {
 			handler_id1 = g_log_set_handler ("Gtk",          (GLogLevelFlags) (G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION), theGtkLogHandler,         nullptr);

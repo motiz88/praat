@@ -37,7 +37,7 @@
 	#include <unistd.h>
 	#if defined (__OpenBSD__) || defined (__NetBSD__)
 		#include <soundcard.h>
-	#elif !defined (EMSCRIPTEN)
+	#elif !defined (__EMSCRIPTEN__)
 		#include <sys/soundcard.h>
 	#endif
 #endif

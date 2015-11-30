@@ -663,7 +663,7 @@ static void initialize (SoundRecorder me) {
 			#if defined (macintosh)
 			#elif defined (_WIN32)
 				(void) me;
-			#elif defined (linux) && !defined (EMSCRIPTEN)
+			#elif defined (linux) && !defined (__EMSCRIPTEN__)
 				int sampleRate = (int) theControlPanel. sampleRate, sampleSize = 16;
 				int channels = my numberOfChannels, stereo = ( my numberOfChannels == 2 ), val;
 				#if __BYTE_ORDER == __BIG_ENDIAN
@@ -727,7 +727,7 @@ static void gui_radiobutton_cb_input (SoundRecorder me, GuiRadioButtonEvent even
 			} catch (MelderError) {
 				Melder_flushError ();
 			}
-		#elif defined (linux) && !defined (EMSCRIPTEN)
+		#elif defined (linux) && !defined (__EMSCRIPTEN__)
 			int fd_mixer = open ("/dev/mixer", O_WRONLY);		
 			if (fd_mixer == -1) {
 				Melder_flushError (U"(Sound_record:) Cannot open /dev/mixer.");
