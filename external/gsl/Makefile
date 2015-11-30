@@ -2,6 +2,7 @@
 # David Weenink, 22 February 2010
 
 include ../../makefile.defs
+include ../../makefiles/max_args.inc.mk
 
 CPPFLAGS = -I ../../sys -I ../../dwsys
 
