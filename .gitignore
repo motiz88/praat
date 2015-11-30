@@ -23,3 +23,5 @@ makefile.defs
 praat
 Praat
 Praat.exe
+praat.bc
+praat.js
