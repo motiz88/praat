@@ -98,7 +98,7 @@ MelderFile Data_createTextFile (Daata me, MelderFile file, bool verbose) {
 }
 
 static void _Data_writeToTextFile (Daata me, MelderFile file, bool verbose) {
-	#if defined(_WIN32) || defined(EMSCRIPTEN)
+	#if defined(_WIN32) || defined(__EMSCRIPTEN__)
 		#define flockfile(f)  (void) 0
 		#define funlockfile(f)  (void) 0
 	#endif
@@ -119,7 +119,7 @@ static void _Data_writeToTextFile (Daata me, MelderFile file, bool verbose) {
 		if (file -> filePointer) funlockfile (file -> filePointer);   // the file pointer is null before Data_createTextFile() and after mfile.close()
 		throw;
 	}
-	#if defined(_WIN32) || defined(EMSCRIPTEN)
+	#if defined(_WIN32) || defined(__EMSCRIPTEN__)
 		#undef flockfile
 		#undef funlockfile
 	#endif

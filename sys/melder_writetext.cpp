@@ -83,7 +83,7 @@ void MelderFile_writeText (MelderFile file, const char32 *text, enum kMelder_tex
 	} else if ((outputEncoding == kMelder_textOutputEncoding_ASCII_THEN_UTF16 && Melder_isValidAscii (text)) ||
 		(outputEncoding == kMelder_textOutputEncoding_ISO_LATIN1_THEN_UTF16 && Melder_isEncodable (text, kMelder_textOutputEncoding_ISO_LATIN1)))
 	{
-		#if defined(_WIN32) || defined(EMSCRIPTEN)
+		#if defined(_WIN32) || defined(__EMSCRIPTEN__)
 			#define flockfile(f)  (void) 0
 			#define funlockfile(f)  (void) 0
 			#define putc_unlocked  putc
@@ -98,7 +98,7 @@ void MelderFile_writeText (MelderFile file, const char32 *text, enum kMelder_tex
 			putc_unlocked (kar, f);
 		}
 		funlockfile (f);
-		#if defined(_WIN32) || defined(EMSCRIPTEN)
+		#if defined(_WIN32) || defined(__EMSCRIPTEN__)
 			#undef flockfile
 			#undef funlockfile
 			#undef putc_unlocked  putc
