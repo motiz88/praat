@@ -101,6 +101,20 @@ you may have to edit the library names in the makefile (you may need pthread, gt
 pangoft2-1.0, gdk_pixbuf-2.0, m, pangocairo-1.0, cairo, gio-2.0, pango-1.0, freetype, fontconfig, gobject-2.0,
 gmodule-2.0, gthread-2.0, rt, glib-2.0).
 
+### 1.8. Compiling with [Emscripten](https://kripken.github.io/emscripten-site/)
+
+*Warning: This is completely experimental at this time.*
+
+Install the (Emscripten SDK)[https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html] for your platform.
+
+Copy `makefiles/makefile.defs.emscripten` to the root Praat directory.
+
+If you are using the Windows version of the SDK, you will need to have Windows versions of some GNU utilities in your `PATH`. [CoreUtils](http://gnuwin32.sourceforge.net/packages/coreutils.htm) and [`make`](http://gnuwin32.sourceforge.net/packages/make.htm) from GnuWin32 seem to be sufficient.
+
+With all the above configured, go to the sources directory and type
+    make
+
+
 ## 2. Binary executables
 
 While the [Praat website](http://www.praat.org) contains the latest executable for all platforms that we support
