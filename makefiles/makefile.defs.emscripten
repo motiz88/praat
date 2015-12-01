@@ -7,7 +7,7 @@ CC = emcc -std=gnu99
 
 CXX = em++ -std=c++11
 
-CFLAGS = -DUNIX -Dlinux -DNO_GRAPHICS -Werror=missing-prototypes -Werror=implicit -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O2 -DDISABLE_FLAC -DDISABLE_MANPAGES -DDISABLE_KNN -DDISABLE_FON -DDISABLE_PORTAUDIO -Dpraat_MAXNUM_OBJECTS=100 -DBATCH_ONLY -s DISABLE_EXCEPTION_CATCHING=0
+CFLAGS = -DUNIX -Dlinux -DNO_GRAPHICS -Werror=missing-prototypes -Werror=implicit -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O2 -DDISABLE_MANPAGES -Dpraat_MAXNUM_OBJECTS=100 -DBATCH_ONLY -s DISABLE_EXCEPTION_CATCHING=0 -DDISABLE_ESPEAK -DNO_MANUAL -DDISABLE_EEG -DDISABLE_GRAM -DDISABLE_FFNET -DDISABLE_ARTSYNTH -DDISABLE_DAVID -DDISABLE_KNN -DWORDLIST_MAX_WORD=33 -DNO_EXAMPLES
 
 CXXFLAGS = $(CFLAGS) -Wshadow
 
@@ -20,6 +20,14 @@ MAIN_ICON =
 RANLIB = emranlib
 AR = emar
 
+PRAAT_MODULES = fon/libfon.a \
+		LPC/libLPC.a dwtools/libdwtools.a \
+		fon/libfon.a stat/libstat.a dwsys/libdwsys.a \
+		sys/libsys.a num/libnum.a kar/libkar.a \
+		external/portaudio/libportaudio.a \
+		external/flac/libflac.a external/mp3/libmp3.a \
+		external/glpk/libglpk.a external/gsl/libgsl.a
+		
 # Define 'all' target so including makefiles still work
 
 all:

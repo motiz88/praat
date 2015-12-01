@@ -12,13 +12,7 @@ all:
 
 .PHONY: platform_postbuild platform_clean
 
-include makefile.defs
-
-all: $(EXECUTABLE) platform_postbuild
-
-# Makes the Praat executable in the source directory.
-
-$(EXECUTABLE): main/main_Praat.o $(MAIN_ICON) fon/libfon.a \
+PRAAT_MODULES = fon/libfon.a \
 		contrib/ola/libOla.a artsynth/libartsynth.a \
 		FFNet/libFFNet.a gram/libgram.a EEG/libEEG.a \
 		LPC/libLPC.a dwtools/libdwtools.a \
@@ -27,6 +21,14 @@ $(EXECUTABLE): main/main_Praat.o $(MAIN_ICON) fon/libfon.a \
 		external/espeak/libespeak.a external/portaudio/libportaudio.a \
 		external/flac/libflac.a external/mp3/libmp3.a \
 		external/glpk/libglpk.a external/gsl/libgsl.a
+		
+include makefile.defs
+
+all: $(EXECUTABLE) platform_postbuild
+
+# Makes the Praat executable in the source directory.
+
+$(EXECUTABLE): main/main_Praat.o $(MAIN_ICON) $(PRAAT_MODULES)
 	$(LINK) -o $(EXECUTABLE) $+ $(LIBS)
 
 external/gsl/libgsl.a:	
