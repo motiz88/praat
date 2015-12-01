@@ -24,7 +24,7 @@
 #ifndef _ManPages_h_
 	#include "ManPages.h"
 #endif
-
+#ifndef DISABLE_MANPAGES
 #define MAN_BEGIN(t,a,d)  { const char32 *title = t, *author = a; long date = d; \
 	static struct structManPage_Paragraph page [] = {
 #define INTRO(text)  { kManPage_type_INTRO, text },
@@ -53,6 +53,35 @@
 #define PICTURE(width,height,draw)  { kManPage_type_PICTURE, nullptr, width, height, draw },
 #define SCRIPT(width,height,text)  { kManPage_type_SCRIPT, text, width, height },
 #define MAN_END  { 0 } }; ManPages_addPage (me, title, author, date, page); }
+#else
+#define MAN_BEGIN(t,a,d)  {
+#define INTRO(text)
+#define ENTRY(text)
+#define NORMAL(text)
+#define LIST_ITEM(text)
+#define LIST_ITEM1(text)
+#define LIST_ITEM2(text)
+#define LIST_ITEM3(text)
+#define TAG(text)
+#define TAG1(text)
+#define TAG2(text)
+#define TAG3(text)
+#define DEFINITION(text)
+#define DEFINITION1(text)
+#define DEFINITION2(text)
+#define DEFINITION3(text)
+#define CODE(text)
+#define CODE1(text)
+#define CODE2(text)
+#define CODE3(text)
+#define CODE4(text)
+#define CODE5(text)
+#define PROTOTYPE(text)
+#define FORMULA(text)
+#define PICTURE(width,height,draw)
+#define SCRIPT(width,height,text) 
+#define MAN_END }
+#endif
 
 #define Manual_DRAW_WINDOW(height,title,menu) \
 	"Select inner viewport... 0.2 5.8 0.2 " #height "-0.2\n" \
