@@ -98,29 +98,31 @@ MelderFile Data_createTextFile (Daata me, MelderFile file, bool verbose) {
 }
 
 static void _Data_writeToTextFile (Daata me, MelderFile file, bool verbose) {
+	#if defined(_WIN32) || defined(EMSCRIPTEN)
+		#define flockfile(f)  (void) 0
+		#define funlockfile(f)  (void) 0
+	#endif
 	try {
 		if (! Data_canWriteText (me))
 			Melder_throw (U"Objects of class ", my classInfo -> className, U" cannot be written to a text file.");
 		autoMelderFile mfile = Data_createTextFile (me, file, verbose);
-		#ifndef _WIN32
-			flockfile (file -> filePointer);   // BUG
-		#endif
+		flockfile (file -> filePointer);   // BUG
 		MelderFile_write (file, U"File type = \"ooTextFile\"\nObject class = \"", my classInfo -> className);
 		if (my classInfo -> version > 0)
 			MelderFile_write (file, U" ", my classInfo -> version);
 		MelderFile_write (file, U"\"\n");
 		Data_writeText (me, file);
 		MelderFile_writeCharacter (file, U'\n');
-		#ifndef _WIN32
-			if (file -> filePointer) funlockfile (file -> filePointer);
-		#endif
+		if (file -> filePointer) funlockfile (file -> filePointer);
 		mfile.close ();
 	} catch (MelderError) {
-		#ifndef _WIN32
-			if (file -> filePointer) funlockfile (file -> filePointer);   // the file pointer is null before Data_createTextFile() and after mfile.close()
-		#endif
+		if (file -> filePointer) funlockfile (file -> filePointer);   // the file pointer is null before Data_createTextFile() and after mfile.close()
 		throw;
 	}
+	#if defined(_WIN32) || defined(EMSCRIPTEN)
+		#undef flockfile
+		#undef funlockfile
+	#endif
 }
 
 void Data_writeToTextFile (Daata me, MelderFile file) {

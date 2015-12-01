@@ -83,7 +83,7 @@ void MelderFile_writeText (MelderFile file, const char32 *text, enum kMelder_tex
 	} else if ((outputEncoding == kMelder_textOutputEncoding_ASCII_THEN_UTF16 && Melder_isValidAscii (text)) ||
 		(outputEncoding == kMelder_textOutputEncoding_ISO_LATIN1_THEN_UTF16 && Melder_isEncodable (text, kMelder_textOutputEncoding_ISO_LATIN1)))
 	{
-		#ifdef _WIN32
+		#if defined(_WIN32) || defined(EMSCRIPTEN)
 			#define flockfile(f)  (void) 0
 			#define funlockfile(f)  (void) 0
 			#define putc_unlocked  putc
@@ -98,6 +98,11 @@ void MelderFile_writeText (MelderFile file, const char32 *text, enum kMelder_tex
 			putc_unlocked (kar, f);
 		}
 		funlockfile (f);
+		#if defined(_WIN32) || defined(EMSCRIPTEN)
+			#undef flockfile
+			#undef funlockfile
+			#undef putc_unlocked  putc
+		#endif
 	} else {
 		binputu2 (0xFEFF, f);   // Byte Order Mark
 		size_t n = str32len (text);
