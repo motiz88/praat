@@ -48,8 +48,12 @@ int main (int argc, char *argv []) {
 	try {
 		praat_setLogo (130.0, 80.0, logo);
 		praat_init (U"Praat", argc, argv);
+		#ifndef DISABLE_FON
 		INCLUDE_LIBRARY (praat_uvafon_init)
+		#endif
+		#ifndef DISABLE_KNN
 		INCLUDE_LIBRARY (praat_contrib_Ola_KNN_init)
+		#endif
 		praat_run ();
 	} catch (MelderError) {
 		Melder_flushError (U"This error message percolated all the way to the top.");   // an attempt to catch Apache errors
