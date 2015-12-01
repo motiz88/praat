@@ -24,7 +24,10 @@
 
 #include "praat.h"
 
+#ifndef DISABLE_EEG
 #include "EEG_extensions.h"
+#endif
+	
 #include "ICA.h"
 #include "Sound_and_PCA.h"
 
@@ -36,6 +39,7 @@ void praat_TableOfReal_init (ClassInfo klas);
 void praat_TableOfReal_init3 (ClassInfo klas);
 
 
+#ifndef DISABLE_EEG
 /******************** EEG ********************************************/
 
 FORM (EEG_to_CrossCorrelationTable, U"EEG: To CrossCorrelationTable", U"EEG: To CrossCorrelationTable...")
@@ -190,7 +194,7 @@ DO
 		praat_new (thee.move(), my name, U"_ch", channel);
 	}
 END
-
+#endif
 /********************** CrossCorrelationTable(s) ******************/
 
 FORM (CrossCorrelationTables_createTestSet, U"CrossCorrelationTables: Create test set", U"CrossCorrelationTables: Create test set...")
@@ -567,7 +571,7 @@ void praat_BSS_init () {
 
 	praat_TableOfReal_init3 (classDiagonalizer);
 	praat_addAction1 (classDiagonalizer, 0, U"To MixingMatrix", 0, 0, DO_Diagonalizer_to_MixingMatrix);
-
+#ifndef DISABLE_EEG
 	praat_addAction1 (classEEG, 0, U"To Sound (mc modulated)...", U"To ERPTier...", praat_HIDDEN, DO_EEG_to_Sound_modulated);
 	praat_addAction1 (classEEG, 0, U"To Sound (frequency shifted)...", U"To ERPTier...", 0, DO_EEG_to_Sound_frequencyShifted);
 	praat_addAction1 (classEEG, 0, U"To PCA...", U"To ERPTier...", 0, DO_EEG_to_PCA);
@@ -579,7 +583,7 @@ void praat_BSS_init () {
 
 	praat_addAction2 (classEEG, 1, classPCA, 1, U"To EEG (principal components)...", 0, 0, DO_EEG_and_PCA_to_EEG_principalComponents);
 	praat_addAction2 (classEEG, 1, classPCA, 1, U"To EEG (whiten)...", 0, 0, DO_EEG_and_PCA_to_EEG_whiten);
-
+#endif
 
 	praat_TableOfReal_init3 (classMixingMatrix);
 

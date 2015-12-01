@@ -23,6 +23,7 @@
  djmw 20120926 Initial
 */
 
+#ifndef DISABLE_EEG
 
 #include "ICA.h"
 #include "EEG.h"
@@ -44,5 +45,7 @@ autoEEG EEG_to_EEG_bss (EEG me, double startTime, double endTime, long ncovars, 
 autoSound EEG_to_Sound_frequencyShifted (EEG me, long channel, double frequencyShift, double samplingFrequency, double maxAmp);
 
 autoSound EEG_to_Sound_modulated (EEG me, double baseFrequency, double channelBandWidth, const char32 *channelRanges);
+
+#endif
 
 #endif /* _EEG_extensions_h_ */

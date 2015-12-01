@@ -17,7 +17,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-
+#ifndef DISABLE_EEG
 #include "ICA.h"
 #include "EEG_extensions.h"
 #include "NUM2.h"
@@ -289,5 +289,7 @@ autoSound EEG_to_Sound_frequencyShifted (EEG me, long channel, double frequencyS
 		Melder_throw (me, U": channel not converted to sound.");
 	}
 }
+
+#endif
 
 /* End of file EEG_extensions.cpp */
