@@ -23,7 +23,9 @@
 #include "SoundEditor.h"
 #include "Sound_and_Spectrogram.h"
 #include "TextGrid_Sound.h"
+#ifndef DISABLE_ESPEAK
 #include "SpeechSynthesizer_and_TextGrid.h"
+#endif
 
 #include "enums_getText.h"
 #include "TextGridEditor_enums.h"
@@ -676,6 +678,7 @@ static void menu_cb_AlignInterval (TextGridEditor me, EDITOR_ARGS_DIRECT) {
 	Editor_broadcastDataChanged (me);
 }
 
+#ifndef DISABLE_ESPEAK
 static void menu_cb_AlignmentSettings (TextGridEditor me, EDITOR_ARGS_FORM) {
 	EDITOR_FORM (U"Alignment settings", nullptr)
 		OPTIONMENU (U"Language", Strings_findString (espeakdata_voices_names.get(), U"English"))
@@ -700,6 +703,7 @@ static void menu_cb_AlignmentSettings (TextGridEditor me, EDITOR_ARGS_FORM) {
 		my pref_align_allowSilences   () = my p_align_allowSilences   = GET_INTEGER (U"Allow silences");
 	EDITOR_END
 }
+#endif
 
 /***** BOUNDARY/POINT MENU *****/
 
@@ -1182,7 +1186,9 @@ void structTextGridEditor :: v_createMenus () {
 	menu = Editor_addMenu (this, U"Interval", 0);
 	if (d_sound.data || d_longSound.data) {
 		EditorMenu_addCommand (menu, U"Align interval", 'D', menu_cb_AlignInterval);
+#ifndef DISABLE_ESPEAK		
 		EditorMenu_addCommand (menu, U"Alignment settings...", 0, menu_cb_AlignmentSettings);
+#endif DISABLE_ESPEAK
 		EditorMenu_addCommand (menu, U"-- add interval --", 0, nullptr);
 	}
 	EditorMenu_addCommand (menu, U"Add interval on tier 1", GuiMenu_COMMAND | '1', menu_cb_InsertIntervalOnTier1);

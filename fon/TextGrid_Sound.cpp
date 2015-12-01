@@ -25,7 +25,10 @@
 
 #include "TextGrid_Sound.h"
 #include "Pitch_to_PitchTier.h"
+#ifndef DISABLE_ESPEAK
 #include "SpeechSynthesizer_and_TextGrid.h"
+#endif
+#include "TextGrid_Extensions.h"
 #include "LongSound.h"
 
 static bool IntervalTier_check (IntervalTier me) {
@@ -156,9 +159,10 @@ void TextGrid_anySound_alignInterval (TextGrid me, Function anySound, long tierN
 			anySound -> classInfo == classLongSound ? 
 				LongSound_extractPart (static_cast <LongSound> (anySound), interval -> xmin, interval -> xmax, true) :
 				Sound_extractPart (static_cast <Sound> (anySound), interval -> xmin, interval -> xmax, kSound_windowShape_RECTANGULAR, 1.0, true);
+		autoTextGrid analysis;
+#ifndef DISABLE_ESPEAK				
 		autoSpeechSynthesizer synthesizer = SpeechSynthesizer_create (languageName, U"default");
 		double silenceThreshold = -35, minSilenceDuration = 0.1, minSoundingDuration = 0.1;
-		autoTextGrid analysis;
 		if (! Melder_equ (interval -> text, U"")) {
 			try {
 				analysis = SpeechSynthesizer_and_Sound_and_TextInterval_align
@@ -167,6 +171,7 @@ void TextGrid_anySound_alignInterval (TextGrid me, Function anySound, long tierN
 				Melder_clearError ();   // ignore all error messages from DTW and the like
 			}
 		}
+#endif		
 		if (analysis.peek()) {
 			/*
 			 * Clean up the analysis.
