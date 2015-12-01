@@ -64,7 +64,7 @@ int Praat_tests (int itest, char32 *arg1, char32 *arg2, char32 *arg3, char32 *ar
 		} break;
 		case kPraatTests_TIME_INTEGER: {
 			int64 sum = 0;
-			#if ! useCarbon
+			#if ! useCarbon && ! defined(__EMSCRIPTEN__)
 			for (int64 i = 1; i <= n; i ++)
 				sum += i * (i - 1) * (i - 2);
 			#endif
