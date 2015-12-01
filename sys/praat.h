@@ -133,7 +133,9 @@ typedef struct {
 	bool isBeingCreated;
 } structPraat_Object, *praat_Object;
 
+#ifndef praat_MAXNUM_OBJECTS
 #define praat_MAXNUM_OBJECTS 10000   /* Maximum number of objects in the list. */
+#endif
 typedef struct {   /* Readonly */
 	MelderString batchName;   /* The name of the command file when called from batch. */
 	int batch;   /* Was the program called from the command line? */
