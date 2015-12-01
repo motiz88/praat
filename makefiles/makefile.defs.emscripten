@@ -7,7 +7,7 @@ CC = emcc -std=gnu99
 
 CXX = em++ -std=c++11
 
-CFLAGS = -D_FILE_OFFSET_BITS=64 -DUNIX -Dlinux -DNO_GRAPHICS -Werror=missing-prototypes -Werror=implicit -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O2 -DDISABLE_FLAC -DDISABLE_MP3 -DDISABLE_MANPAGES -DDISABLE_KNN -DDISABLE_FON -DDISABLE_PORTAUDIO -Dpraat_MAXNUM_OBJECTS=100
+CFLAGS = -DUNIX -Dlinux -DNO_GRAPHICS -Werror=missing-prototypes -Werror=implicit -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O2 -DDISABLE_FLAC -DDISABLE_MANPAGES -DDISABLE_KNN -DDISABLE_FON -DDISABLE_PORTAUDIO -Dpraat_MAXNUM_OBJECTS=100 -DBATCH_ONLY -s DISABLE_EXCEPTION_CATCHING=0
 
 CXXFLAGS = $(CFLAGS) -Wshadow
 
@@ -24,11 +24,19 @@ AR = emar
 
 all:
 
-platform_postbuild: build/praat.html build/praat.js build/praat.asm.js build/praat.html.mem
+platform_postbuild: build/praat.html
 
-build/praat.html build/praat.js build/praat.asm.js build/praat.html.mem: $(EXECUTABLE)
+JS_LIBRARY_FILES = $(wildcard js/lib*.js)
+JS_LIBS = $(patsubst %,--js-library %,$(JS_LIBRARY_FILES))
+
+build/praat.html: $(EXECUTABLE) $(wildcard js/*.js) $(wildcard js/*.json)
 	$(shell mkdir build)
-	$(CC) -O2 $(EXECUTABLE) -o build/praat.html --proxy-to-worker -s ALLOW_MEMORY_GROWTH=1 -s DEMANGLE_SUPPORT=1 --separate-asm
+	$(CC) -O1 $(EXECUTABLE) -o build/praat.html --proxy-to-worker -s ALLOW_MEMORY_GROWTH=1 -s DEMANGLE_SUPPORT=1 \
+		-s DISABLE_EXCEPTION_CATCHING=0 \
+		--pre-js js/pre.js \
+		--post-js js/post.js \
+		-s EXPORTED_FUNCTIONS=@js/EXPORTED_FUNCTIONS.json \
+		$(JS_LIBS)
 
 platform_clean:
-	$(RM) build/praat.html build/praat.js build/praat.asm.js build/praat.html.mem
+	$(RM) build/praat.html build/praat.js build/praat.html.mem build/praat.asm.js
