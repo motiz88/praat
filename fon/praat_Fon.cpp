@@ -7202,7 +7202,7 @@ praat_addAction2 (classPointProcess, 1, classSound, 1, U"Synthesize", nullptr, 0
 	praat_addAction2 (classPointProcess, 1, classSound, 1, U"To Sound ensemble...", nullptr, 0, DO_Sound_PointProcess_to_SoundEnsemble_correlate);
 
 	praat_addAction4 (classDurationTier, 1, classPitchTier, 1, classPointProcess, 1, classSound, 1, U"To Sound...", nullptr, 0, DO_Sound_Point_Pitch_Duration_to_Sound);
-
+#ifndef NO_MANUAL
 	INCLUDE_MANPAGES (manual_Manual_init)
 	INCLUDE_MANPAGES (manual_Script_init)
 	INCLUDE_MANPAGES (manual_Picture_init)
@@ -7215,19 +7215,38 @@ praat_addAction2 (classPointProcess, 1, classSound, 1, U"Synthesize", nullptr, 0
 	INCLUDE_MANPAGES (manual_statistics_init)
 	INCLUDE_MANPAGES (manual_voice_init)
 	INCLUDE_MANPAGES (manual_programming_init)
+#ifndef DISABLE_GRAM	
 	INCLUDE_MANPAGES (manual_gram_init)
+#endif
 	INCLUDE_MANPAGES (manual_Exp_init)
+#ifndef DISABLE_EEG	
 	INCLUDE_MANPAGES (manual_EEG_init)
+#endif
+#endif
 
+#ifndef DISABLE_EEG	
 	INCLUDE_LIBRARY (praat_EEG_init)
+#endif
 	praat_addMenuCommand (U"Objects", U"New", U"-- new synthesis --", nullptr, 0, nullptr);
+#ifndef	DISABLE_ARTSYNTH
 	INCLUDE_LIBRARY (praat_uvafon_Artsynth_init)
+#endif
+#ifndef DISABLE_DAVID
 	INCLUDE_LIBRARY (praat_uvafon_David_init)
+#endif	
 	praat_addMenuCommand (U"Objects", U"New", U"-- new grammars --", nullptr, 0, nullptr);
+#ifndef DISABLE_GRAM	
 	INCLUDE_LIBRARY (praat_uvafon_gram_init)
+#endif
+#ifndef DISABLE_FFNET	
 	INCLUDE_LIBRARY (praat_uvafon_FFNet_init)
+#endif
+#ifndef DISABLE_LPC
 	INCLUDE_LIBRARY (praat_uvafon_LPC_init)
+#endif
+#ifndef DISABLE_EXP
 	INCLUDE_LIBRARY (praat_uvafon_Exp_init)
+#endif
 }
 
 /* End of file praat_Fon.cpp */
