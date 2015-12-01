@@ -19,3 +19,16 @@ ICON =
 MAIN_ICON =
 RANLIB = emranlib
 AR = emar
+
+# Define 'all' target so including makefiles still work
+
+all:
+
+platform_postbuild: build/praat.html build/praat.js build/praat.asm.js build/praat.html.mem
+
+build/praat.html build/praat.js build/praat.asm.js build/praat.html.mem: $(EXECUTABLE)
+	$(shell mkdir build)
+	$(CC) -O2 $(EXECUTABLE) -o build/praat.html --proxy-to-worker -s ALLOW_MEMORY_GROWTH=1 -s DEMANGLE_SUPPORT=1 --separate-asm
+
+platform_clean:
+	$(RM) build/praat.html build/praat.js build/praat.asm.js build/praat.html.mem

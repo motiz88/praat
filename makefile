@@ -7,31 +7,18 @@
 # makefile.defs, which has to be copied and renamed
 # from a suitable makefile.defs.XXX file in the makefiles directory,
 # Perhaps that file requires some editing.
+
+all:
+
+.PHONY: platform_postbuild platform_clean
+
 include makefile.defs
 
+all: $(EXECUTABLE) platform_postbuild
+
 # Makes the Praat executable in the source directory.
-all:
-	$(MAKE) -C external/gsl
-	$(MAKE) -C external/glpk
-	$(MAKE) -C external/mp3
-	$(MAKE) -C external/flac
-	$(MAKE) -C external/portaudio
-	$(MAKE) -C external/espeak
-	$(MAKE) -C kar
-	$(MAKE) -C num
-	$(MAKE) -C sys
-	$(MAKE) -C dwsys
-	$(MAKE) -C stat
-	$(MAKE) -C fon
-	$(MAKE) -C dwtools
-	$(MAKE) -C LPC
-	$(MAKE) -C EEG
-	$(MAKE) -C gram
-	$(MAKE) -C FFNet
-	$(MAKE) -C artsynth
-	$(MAKE) -C contrib/ola
-	$(MAKE) -C main main_Praat.o $(ICON)
-	$(LINK) -o $(EXECUTABLE) main/main_Praat.o $(MAIN_ICON) fon/libfon.a \
+
+$(EXECUTABLE): main/main_Praat.o $(MAIN_ICON) fon/libfon.a \
 		contrib/ola/libOla.a artsynth/libartsynth.a \
 		FFNet/libFFNet.a gram/libgram.a EEG/libEEG.a \
 		LPC/libLPC.a dwtools/libdwtools.a \
@@ -39,10 +26,71 @@ all:
 		sys/libsys.a num/libnum.a kar/libkar.a \
 		external/espeak/libespeak.a external/portaudio/libportaudio.a \
 		external/flac/libflac.a external/mp3/libmp3.a \
-		external/glpk/libglpk.a external/gsl/libgsl.a \
-		$(LIBS)
+		external/glpk/libglpk.a external/gsl/libgsl.a
+	$(LINK) -o $(EXECUTABLE) $^ $(LIBS)
 
-clean:
+external/gsl/libgsl.a:	
+	$(MAKE) -C external/gsl
+
+external/glpk/libglpk.a:
+	$(MAKE) -C external/glpk
+
+external/mp3/libmp3.a:
+	$(MAKE) -C external/mp3
+
+external/flac/libflac.a:
+	$(MAKE) -C external/flac
+
+external/portaudio/libportaudio.a:
+	$(MAKE) -C external/portaudio
+
+external/espeak/libespeak.a:
+	$(MAKE) -C external/espeak
+
+kar/libkar.a:
+	$(MAKE) -C kar
+
+num/libnum.a:
+	$(MAKE) -C num
+
+sys/libsys.a:
+	$(MAKE) -C sys
+
+dwsys/libdwsys.a:
+	$(MAKE) -C dwsys
+
+stat/libstat.a:
+	$(MAKE) -C stat
+
+fon/libfon.a:
+	$(MAKE) -C fon
+
+dwtools/libdwtools.a:
+	$(MAKE) -C dwtools
+
+LPC/libLPC.a:
+	$(MAKE) -C LPC
+
+EEG/libEEG.a:
+	$(MAKE) -C EEG
+
+gram/libgram.a:
+	$(MAKE) -C gram
+
+FFNet/libFFNet.a:
+	$(MAKE) -C FFNet
+
+artsynth/libartsynth.a:
+	$(MAKE) -C artsynth
+
+contrib/ola/libOla.a:
+	$(MAKE) -C contrib/ola
+
+main/main_Praat.o: $(ICON)
+	$(MAKE) -C main main_Praat.o $(ICON)
+
+
+clean: platform_clean
 	$(MAKE) -C external/gsl clean
 	$(MAKE) -C external/glpk clean
 	$(MAKE) -C external/mp3 clean
