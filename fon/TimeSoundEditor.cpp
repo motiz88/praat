@@ -271,6 +271,7 @@ static void menu_cb_WriteNist (TimeSoundEditor me, EDITOR_ARGS_FORM) {
 	EDITOR_END
 }
 
+#if !defined(DISABLE_FLAC)
 static void menu_cb_WriteFlac (TimeSoundEditor me, EDITOR_ARGS_FORM) {
 	EDITOR_FORM_WRITE (U"Save selected sound as FLAC file", nullptr)
 		Melder_sprint (defaultName,300, my d_longSound.data ? my d_longSound.data -> name : my d_sound.data -> name, U".flac");
@@ -278,6 +279,7 @@ static void menu_cb_WriteFlac (TimeSoundEditor me, EDITOR_ARGS_FORM) {
 		do_write (me, file, Melder_FLAC, 16);
 	EDITOR_END
 }
+#endif
 
 void structTimeSoundEditor :: v_createMenuItems_file_draw (EditorMenu menu) {
 	EditorMenu_addCommand (menu, U"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_DrawVisibleSound /* dummy */);
@@ -333,9 +335,11 @@ void structTimeSoundEditor :: v_createMenuItems_file_write (EditorMenu menu) {
 			EditorMenu_addCommand (menu, U"Write selected sound to NIST file...", Editor_HIDDEN, menu_cb_WriteNist);
 			EditorMenu_addCommand (menu, U"Write sound selection to NIST file...", Editor_HIDDEN, menu_cb_WriteNist);
 			EditorMenu_addCommand (menu, U"Write selection to NIST file...", Editor_HIDDEN, menu_cb_WriteNist);
+		#if !defined(DISABLE_FLAC)			
 		writeFlacButton = EditorMenu_addCommand (menu, U"Save selected sound as FLAC file...", 0, menu_cb_WriteFlac);
 			EditorMenu_addCommand (menu, U"Write selected sound to FLAC file...", Editor_HIDDEN, menu_cb_WriteFlac);
 			EditorMenu_addCommand (menu, U"Write sound selection to FLAC file...", Editor_HIDDEN, menu_cb_WriteFlac);
+		#endif
 	}
 }
 
@@ -428,7 +432,9 @@ void structTimeSoundEditor :: v_updateMenuItems_file () {
 	GuiThing_setSensitive (writeAifcButton, selectedSamples != 0);
 	GuiThing_setSensitive (writeNextSunButton, selectedSamples != 0);
 	GuiThing_setSensitive (writeNistButton, selectedSamples != 0);
+#if !defined(DISABLE_FLAC)	
 	GuiThing_setSensitive (writeFlacButton, selectedSamples != 0);
+#endif
 }
 
 void TimeSoundEditor_drawSound (TimeSoundEditor me, double globalMinimum, double globalMaximum) {

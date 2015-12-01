@@ -44,8 +44,12 @@
 
 #include "LongSound.h"
 #include "Preferences.h"
+#if !defined(DISABLE_FLAC)
 #include "flac_FLAC_stream_decoder.h"
+#endif
+#if !defined(DISABLE_MP3)
 #include "mp3.h"
+#endif
 
 Thing_implement (LongSound, Sampled, 0);
 
@@ -67,13 +71,18 @@ void structLongSound :: v_destroy () {
 	 * That pointer is about to dangle, so kill the playback.
 	 */
 	MelderAudio_stopPlaying (MelderAudio_IMPLICIT);
+	#if !defined(DISABLE_MP3)
 	if (mp3f)
 		mp3f_delete (mp3f);
+	#endif
+	#if !defined(DISABLE_FLAC)
 	if (flacDecoder) {
 		FLAC__stream_decoder_finish (flacDecoder);   // closes f
 		FLAC__stream_decoder_delete (flacDecoder);
 	}
-	else if (f) fclose (f);
+	else
+	#endif
+		if (f) fclose (f);
 	NUMvector_free <int16> (buffer, 0);
 	LongSound_Parent :: v_destroy ();
 }
@@ -98,6 +107,7 @@ void structLongSound :: v_info () {
 	MelderInfo_writeLine (U"Start of sample data: ", startOfData, U" bytes from the start of the file");
 }
 
+#if !defined(DISABLE_FLAC)
 static void _LongSound_FLAC_convertFloats (LongSound me, const int32 * const samples[], long bitsPerSample, long numberOfSamples) {
 	double multiplier;
 	switch (bitsPerSample) {
@@ -156,7 +166,9 @@ static FLAC__StreamDecoderWriteStatus _LongSound_FLAC_write (const FLAC__StreamD
 
 static void _LongSound_FLAC_error (const FLAC__StreamDecoder * /* decoder */, FLAC__StreamDecoderErrorStatus /* status */, void * /* longSound */) {
 }
+#endif
 
+#if !defined(DISABLE_MP3)
 static void _LongSound_MP3_convertFloats (LongSound me, const MP3F_SAMPLE *channels [MP3F_MAX_CHANNELS], long numberOfSamples) {
 	for (long i = 0; i < 2; ++i) {
 		const MP3F_SAMPLE *input = channels [i];
@@ -192,6 +204,7 @@ static void _LongSound_MP3_convert (const MP3F_SAMPLE *channels [MP3F_MAX_CHANNE
 		_LongSound_MP3_convertShorts (me, channels, numberOfSamples);
 	my compressedSamplesLeft -= numberOfSamples;
 }
+#endif
 
 static void LongSound_init (LongSound me, MelderFile file) {
 	MelderFile_copy (file, & my file);
@@ -224,11 +237,14 @@ static void LongSound_init (LongSound me, MelderFile file) {
 	}
 	my imin = 1;
 	my imax = 0;
+	#if !defined(DISABLE_FLAC)	
 	my flacDecoder = nullptr;
 	if (my audioFileType == Melder_FLAC) {
 		my flacDecoder = FLAC__stream_decoder_new ();
 		FLAC__stream_decoder_init_FILE (my flacDecoder, my f, _LongSound_FLAC_write, nullptr, _LongSound_FLAC_error, me);
 	}
+	#endif
+	#if !defined(DISABLE_MP3)	
 	my mp3f = nullptr;
 	if (my audioFileType == Melder_MP3) {
 		my mp3f = mp3f_new ();
@@ -239,6 +255,7 @@ static void LongSound_init (LongSound me, MelderFile file) {
 		Melder_warning (U"Time measurements in MP3 files can be off by several tens of milliseconds. "
 			U"Please convert to WAV file if you need time precision or annotation.");
 	}
+	#endif
 }
 
 void structLongSound :: v_copy (Daata thee_Daata) {
@@ -258,6 +275,7 @@ autoLongSound LongSound_open (MelderFile file) {
 	}
 }
 
+#if !defined(DISABLE_FLAC)
 static void _LongSound_FLAC_process (LongSound me, long firstSample, long numberOfSamples) {
 	my compressedSamplesLeft = numberOfSamples - 1;
 	if (! FLAC__stream_decoder_seek_absolute (my flacDecoder, firstSample))
@@ -269,18 +287,22 @@ static void _LongSound_FLAC_process (LongSound me, long firstSample, long number
 			Melder_throw (U"Error decoding FLAC file ", & my file, U".");
 	}
 }
+#endif
 
 static void _LongSound_FILE_seekSample (LongSound me, long firstSample) {
 	if (fseek (my f, my startOfData + (firstSample - 1) * my numberOfChannels * my numberOfBytesPerSamplePoint, SEEK_SET))
 		Melder_throw (U"Cannot seek in file ", & my file, U".");
 }
 
+#if !defined(DISABLE_FLAC)
 static void _LongSound_FLAC_readAudioToShort (LongSound me, int16 *buffer, long firstSample, long numberOfSamples) {
 	my compressedMode = COMPRESSED_MODE_READ_SHORT;
 	my compressedShorts = buffer + 1;
 	_LongSound_FLAC_process (me, firstSample, numberOfSamples);
 }
+#endif
 
+#if !defined(DISABLE_MP3)
 static void _LongSound_MP3_process (LongSound me, long firstSample, long numberOfSamples) {
 	if (! mp3f_seek (my mp3f, firstSample))
 		Melder_throw (U"Cannot seek in MP3 file ", & my file, U".");
@@ -295,31 +317,49 @@ static void _LongSound_MP3_readAudioToShort (LongSound me, int16 *buffer, long f
 	_LongSound_MP3_process (me, firstSample, numberOfSamples - 1);
 }
 
+#endif
+
 void LongSound_readAudioToFloat (LongSound me, double **buffer, long firstSample, long numberOfSamples) {
+	#if !defined(DISABLE_FLAC)
 	if (my encoding == Melder_FLAC_COMPRESSION_16) {
 		my compressedMode = COMPRESSED_MODE_READ_FLOAT;
 		for (int ichan = 1; ichan <= my numberOfChannels; ichan ++) {
 			my compressedFloats [ichan - 1] = & buffer [ichan] [1];
 		}
 		_LongSound_FLAC_process (me, firstSample, numberOfSamples);
-	} else if (my encoding == Melder_MPEG_COMPRESSION_16) {
+	} else 
+	#endif
+
+	#if !defined(DISABLE_FLAC)
+	if (my encoding == Melder_MPEG_COMPRESSION_16) {
 		my compressedMode = COMPRESSED_MODE_READ_FLOAT;
 		for (int ichan = 1; ichan <= my numberOfChannels; ichan ++) {
 			my compressedFloats [ichan - 1] = & buffer [ichan] [1];
 		}
 		_LongSound_MP3_process (me, firstSample, numberOfSamples);
-	} else {
+	} else
+	#endif
+
+	{
 		_LongSound_FILE_seekSample (me, firstSample);
 		Melder_readAudioToFloat (my f, my numberOfChannels, my encoding, buffer, numberOfSamples);
 	}
 }
 
 void LongSound_readAudioToShort (LongSound me, int16 *buffer, long firstSample, long numberOfSamples) {
+	#if !defined(DISABLE_FLAC)
 	if (my encoding == Melder_FLAC_COMPRESSION_16) {
 		_LongSound_FLAC_readAudioToShort (me, buffer, firstSample, numberOfSamples);
-	} else if (my encoding == Melder_MPEG_COMPRESSION_16) {
+	} else
+	#endif
+
+	#if !defined(DISABLE_MP3)
+	if (my encoding == Melder_MPEG_COMPRESSION_16) {
 		_LongSound_MP3_readAudioToShort (me, buffer, firstSample, numberOfSamples);
-	} else {
+	} else 
+	#endif
+
+	{
 		_LongSound_FILE_seekSample (me, firstSample);
 		Melder_readAudioToShort (my f, my numberOfChannels, my encoding, buffer, numberOfSamples);
 	}

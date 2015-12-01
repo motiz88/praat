@@ -25,10 +25,13 @@
 #define COMPRESSED_MODE_READ_FLOAT 0
 #define COMPRESSED_MODE_READ_SHORT 1
 
+#if !defined(DISABLE_FLAC)
 struct FLAC__StreamDecoder;
 struct FLAC__StreamEncoder;
+#endif
+#if !defined(DISABLE_MP3)
 struct _MP3_FILE;
-
+#endif
 Thing_define (LongSound, Sampled) {
 	structMelderFile file;
 	FILE *f;
@@ -38,8 +41,16 @@ Thing_define (LongSound, Sampled) {
 	double bufferLength;
 	int16 *buffer;   // this is always 16-bit, because will always play sounds in 16-bit, even those from 24-bit files
 	long imin, imax, nmax;
+	#if !defined(DISABLE_FLAC)
 	struct FLAC__StreamDecoder *flacDecoder;
+	#else
+	void *flacDecoder_reserved;
+	#endif
+	#if !defined(DISABLE_MP3)	
 	struct _MP3_FILE *mp3f;
+	#else
+	void *mp3f_reserved;
+	#endif
 	int compressedMode;
 	long compressedSamplesLeft;
 	double *compressedFloats [2];

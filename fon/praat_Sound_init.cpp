@@ -36,7 +36,9 @@
 #include "SoundRecorder.h"
 #include "SpectrumEditor.h"
 #include "TextGrid_Sound.h"
+#if !defined(DISABLE_MP3)
 #include "mp3.h"
+#endif
 
 #undef iam
 #define iam iam_LOOP
@@ -197,10 +199,12 @@ FORM_WRITE2 (LongSound_writeToNistFile, U"Save as NIST file", nullptr, U"nist") 
 	LongSound_concatenate (set.peek(), file, Melder_NIST, 16);
 END2 }
 
+#if !defined(DISABLE_FLAC)
 FORM_WRITE2 (LongSound_writeToFlacFile, U"Save as FLAC file", nullptr, U"flac") {
 	autoCollection set = praat_getSelectedObjects ();
 	LongSound_concatenate (set.peek(), file, Melder_FLAC, 16);
 END2 }
+#endif
 
 FORM_WRITE2 (LongSound_writeToWavFile, U"Save as WAV file", nullptr, U"wav") {
 	autoCollection set = praat_getSelectedObjects ();
@@ -235,12 +239,14 @@ FORM_WRITE2 (LongSound_writeLeftChannelToNistFile, U"Save left channel as NIST f
 	}
 END2 }
 
+#if !defined(DISABLE_FLAC)
 FORM_WRITE2 (LongSound_writeLeftChannelToFlacFile, U"Save left channel as FLAC file", nullptr, U"flac") {
 	LOOP {
 		iam (LongSound);
 		LongSound_writeChannelToAudioFile (me, Melder_FLAC, 0, file);
 	}
 END2 }
+#endif
 
 FORM_WRITE2 (LongSound_writeLeftChannelToWavFile, U"Save left channel as WAV file", nullptr, U"wav") {
 	LOOP {
@@ -277,12 +283,14 @@ FORM_WRITE2 (LongSound_writeRightChannelToNistFile, U"Save right channel as NIST
 	}
 END2 }
 
+#if !defined(DISABLE_FLAC)
 FORM_WRITE2 (LongSound_writeRightChannelToFlacFile, U"Save right channel as FLAC file", 0, U"flac") {
 	LOOP {
 		iam (LongSound);
 		LongSound_writeChannelToAudioFile (me, Melder_FLAC, 1, file);
 	}
 END2 }
+#endif
 
 FORM_WRITE2 (LongSound_writeRightChannelToWavFile, U"Save right channel as WAV file", 0, U"wav") {
 	LOOP {
@@ -326,10 +334,12 @@ FORM_WRITE2 (LongSound_Sound_writeToNistFile, U"Save as NIST file", nullptr, U"n
 	LongSound_concatenate (set.peek(), file, Melder_NIST, 16);
 END2 }
 
+#if !defined(DISABLE_FLAC)
 FORM_WRITE2 (LongSound_Sound_writeToFlacFile, U"Save as FLAC file", nullptr, U"flac") {
 	autoCollection set = praat_getSelectedObjects ();
 	LongSound_concatenate (set.peek(), file, Melder_FLAC, 16);
 END2 }
+#endif
 
 FORM_WRITE2 (LongSound_Sound_writeToWavFile, U"Save as WAV file", nullptr, U"wav") {
 	autoCollection set = praat_getSelectedObjects ();
@@ -2066,10 +2076,12 @@ FORM_WRITE2 (Sound_writeToAiffFile, U"Save as AIFF file", nullptr, U"aiff") {
 	LongSound_concatenate (set.peek(), file, Melder_AIFF, 16);
 END2 }
 
+#if !defined(DISABLE_FLAC)
 FORM_WRITE2 (Sound_writeToFlacFile, U"Save as FLAC file", nullptr, U"flac") {
 	autoCollection set = praat_getSelectedObjects ();
 	LongSound_concatenate (set.peek(), file, Melder_FLAC, 16);
 END2 }
+#endif
 
 FORM_WRITE2 (Sound_writeToKayFile, U"Save as Kay sound file", nullptr, U"kay") {
 	LOOP {
@@ -2175,11 +2187,13 @@ FORM_WRITE2 (Sound_writeToStereoNistFile, U"Save as stereo NIST file", nullptr, 
 	Sound_writeToAudioFile (stereo.peek(), file, Melder_NIST, 16);
 END2 }
 
+#if !defined(DISABLE_FLAC)
 FORM_WRITE2 (Sound_writeToStereoFlacFile, U"Save as stereo FLAC file", nullptr, U"flac") {
 	autoCollection set = praat_getSelectedObjects ();
 	autoSound stereo = Sounds_combineToStereo (set.peek());
 	Sound_writeToAudioFile (stereo.peek(), file, Melder_FLAC, 16);
 END2 }
+#endif
 
 FORM_WRITE2 (Sound_writeToStereoWavFile, U"Save as stereo WAV file", nullptr, U"wav") {
 	autoCollection set = praat_getSelectedObjects ();
@@ -2227,10 +2241,14 @@ static autoDaata soundFileRecognizer (int nread, const char *header, MelderFile 
 	if (strnequ (header, "RIFF", 4) && (strnequ (header + 8, "WAVE", 4) || strnequ (header + 8, "CDDA", 4))) return Sound_readFromSoundFile (file);
 	if (strnequ (header, ".snd", 4)) return Sound_readFromSoundFile (file);
 	if (strnequ (header, "NIST_1A", 7)) return Sound_readFromSoundFile (file);
+	#if !defined(DISABLE_FLAC)
 	if (strnequ (header, "fLaC", 4)) return Sound_readFromSoundFile (file);   // Erez Volk, March 2007
+	#endif
+	#if !defined(DISABLE_MP3)	
 	if ((Melder_stringMatchesCriterion (MelderFile_name (file), kMelder_string_ENDS_WITH, U".mp3") ||
 	     Melder_stringMatchesCriterion (MelderFile_name (file), kMelder_string_ENDS_WITH, U".MP3"))
 		&& mp3_recognize (nread, header)) return Sound_readFromSoundFile (file);   // Erez Volk, May 2007
+	#endif
 	return autoDaata ();
 }
 
@@ -2390,8 +2408,10 @@ void praat_uvafon_Sound_init () {
 	praat_addAction1 (classLongSound, 0, U"Write to Next/Sun file...", nullptr, praat_HIDDEN, DO_LongSound_writeToNextSunFile);
 	praat_addAction1 (classLongSound, 0, U"Save as NIST file...", nullptr, 0, DO_LongSound_writeToNistFile);
 	praat_addAction1 (classLongSound, 0, U"Write to NIST file...", nullptr, praat_HIDDEN, DO_LongSound_writeToNistFile);
+#if !defined(DISABLE_FLAC)	
 	praat_addAction1 (classLongSound, 0, U"Save as FLAC file...", nullptr, 0, DO_LongSound_writeToFlacFile);
 	praat_addAction1 (classLongSound, 0, U"Write to FLAC file...", nullptr, praat_HIDDEN, DO_LongSound_writeToFlacFile);
+#endif
 	praat_addAction1 (classLongSound, 0, U"Save left channel as WAV file...", nullptr, 0, DO_LongSound_writeLeftChannelToWavFile);
 	praat_addAction1 (classLongSound, 0, U"Write left channel to WAV file...", nullptr, praat_HIDDEN, DO_LongSound_writeLeftChannelToWavFile);
 	praat_addAction1 (classLongSound, 0, U"Save left channel as AIFF file...", nullptr, 0, DO_LongSound_writeLeftChannelToAiffFile);
@@ -2402,8 +2422,10 @@ void praat_uvafon_Sound_init () {
 	praat_addAction1 (classLongSound, 0, U"Write left channel to Next/Sun file...", nullptr, praat_HIDDEN, DO_LongSound_writeLeftChannelToNextSunFile);
 	praat_addAction1 (classLongSound, 0, U"Save left channel as NIST file...", nullptr, 0, DO_LongSound_writeLeftChannelToNistFile);
 	praat_addAction1 (classLongSound, 0, U"Write left channel to NIST file...", nullptr, praat_HIDDEN, DO_LongSound_writeLeftChannelToNistFile);
+#if !defined(DISABLE_FLAC)
 	praat_addAction1 (classLongSound, 0, U"Save left channel as FLAC file...", nullptr, 0, DO_LongSound_writeLeftChannelToFlacFile);
 	praat_addAction1 (classLongSound, 0, U"Write left channel to FLAC file...", nullptr, praat_HIDDEN, DO_LongSound_writeLeftChannelToFlacFile);
+#endif	
 	praat_addAction1 (classLongSound, 0, U"Save right channel as WAV file...", nullptr, 0, DO_LongSound_writeRightChannelToWavFile);
 	praat_addAction1 (classLongSound, 0, U"Write right channel to WAV file...", nullptr, praat_HIDDEN, DO_LongSound_writeRightChannelToWavFile);
 	praat_addAction1 (classLongSound, 0, U"Save right channel as AIFF file...", nullptr, 0, DO_LongSound_writeRightChannelToAiffFile);
@@ -2414,8 +2436,10 @@ void praat_uvafon_Sound_init () {
 	praat_addAction1 (classLongSound, 0, U"Write right channel to Next/Sun file...", nullptr, praat_HIDDEN, DO_LongSound_writeRightChannelToNextSunFile);
 	praat_addAction1 (classLongSound, 0, U"Save right channel as NIST file...", nullptr, 0, DO_LongSound_writeRightChannelToNistFile);
 	praat_addAction1 (classLongSound, 0, U"Write right channel to NIST file...", nullptr, praat_HIDDEN, DO_LongSound_writeRightChannelToNistFile);
+#if !defined(DISABLE_FLAC)
 	praat_addAction1 (classLongSound, 0, U"Save right channel as FLAC file...", nullptr, 0, DO_LongSound_writeRightChannelToFlacFile);
 	praat_addAction1 (classLongSound, 0, U"Write right channel to FLAC file...", nullptr, praat_HIDDEN, DO_LongSound_writeRightChannelToFlacFile);
+#endif	
 	praat_addAction1 (classLongSound, 0, U"Save part as audio file...", nullptr, 0, DO_LongSound_writePartToAudioFile);
 	praat_addAction1 (classLongSound, 0, U"Write part to audio file...", nullptr, praat_HIDDEN, DO_LongSound_writePartToAudioFile);
 
@@ -2431,8 +2455,10 @@ void praat_uvafon_Sound_init () {
 	praat_addAction1 (classSound, 0, U"Write to Sun audio file...", nullptr, praat_HIDDEN, DO_Sound_writeToSunAudioFile);
 	praat_addAction1 (classSound, 0, U"Save as NIST file...", nullptr, 0, DO_Sound_writeToNistFile);
 	praat_addAction1 (classSound, 0, U"Write to NIST file...", nullptr, praat_HIDDEN, DO_Sound_writeToNistFile);
+#if !defined(DISABLE_FLAC)
 	praat_addAction1 (classSound, 0, U"Save as FLAC file...", nullptr, 0, DO_Sound_writeToFlacFile);
 	praat_addAction1 (classSound, 0, U"Write to FLAC file...", nullptr, praat_HIDDEN, DO_Sound_writeToFlacFile);
+#endif	
 	praat_addAction1 (classSound, 1, U"Save as Kay sound file...", nullptr, 0, DO_Sound_writeToKayFile);
 	praat_addAction1 (classSound, 1, U"Write to Kay sound file...", nullptr, praat_HIDDEN, DO_Sound_writeToKayFile);
 	praat_addAction1 (classSound, 1, U"Save as Sesam file...", nullptr, praat_HIDDEN, DO_Sound_writeToSesamFile);
@@ -2444,7 +2470,9 @@ void praat_uvafon_Sound_init () {
 	praat_addAction1 (classSound, 2, U"Write to stereo AIFC file...", nullptr, praat_HIDDEN, DO_Sound_writeToStereoAifcFile);   // deprecated 2007
 	praat_addAction1 (classSound, 2, U"Write to stereo Next/Sun file...", nullptr, praat_HIDDEN, DO_Sound_writeToStereoNextSunFile);   // deprecated 2007
 	praat_addAction1 (classSound, 2, U"Write to stereo NIST file...", nullptr, praat_HIDDEN, DO_Sound_writeToStereoNistFile);   // deprecated 2007
+#if !defined(DISABLE_FLAC)
 	praat_addAction1 (classSound, 2, U"Write to stereo FLAC file...", nullptr, praat_HIDDEN, DO_Sound_writeToStereoFlacFile);
+#endif
 	//praat_addAction1 (classSound, 1, U"Save as raw sound file", nullptr, 0, nullptr);
 	praat_addAction1 (classSound, 1, U"Save as raw 8-bit signed file...", nullptr, 0, DO_Sound_saveAsRaw8bitSignedFile);
 	praat_addAction1 (classSound, 1, U"Write to raw 8-bit signed file...", nullptr, praat_HIDDEN, DO_Sound_saveAsRaw8bitSignedFile);
@@ -2613,8 +2641,10 @@ void praat_uvafon_Sound_init () {
 	praat_addAction2 (classLongSound, 0, classSound, 0, U"Write to NeXT/Sun file...", nullptr, praat_HIDDEN, DO_LongSound_Sound_writeToNextSunFile);
 	praat_addAction2 (classLongSound, 0, classSound, 0, U"Save as NIST file...", nullptr, 0, DO_LongSound_Sound_writeToNistFile);
 	praat_addAction2 (classLongSound, 0, classSound, 0, U"Write to NIST file...", nullptr, praat_HIDDEN, DO_LongSound_Sound_writeToNistFile);
+#if !defined(DISABLE_FLAC)
 	praat_addAction2 (classLongSound, 0, classSound, 0, U"Save as FLAC file...", nullptr, 0, DO_LongSound_Sound_writeToFlacFile);
 	praat_addAction2 (classLongSound, 0, classSound, 0, U"Write to FLAC file...", nullptr, praat_HIDDEN, DO_LongSound_Sound_writeToFlacFile);
+#endif	
 }
 
 /* End of file praat_Sound.cpp */
