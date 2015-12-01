@@ -24,6 +24,9 @@
 #include "WordList_def.h"
 oo_CLASS_CREATE (WordList, Daata);
 
+#ifndef WORDLIST_MAX_WORD
+#define WORDLIST_MAX_WORD 3333
+#endif
 autoWordList Strings_to_WordList (Strings me);
 autoStrings WordList_to_Strings (WordList me);
 

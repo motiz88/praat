@@ -185,8 +185,8 @@ bool SpellingChecker_isWordAllowed (SpellingChecker me, const char32 *word) {
 	if (WordList_hasWord (my wordList.get(), word))
 		return true;
 	if (my userDictionary) {
-		if (str32len (word) > 3333) return false;   // superfluous, because WordList_hasWord already checked; but safe
-		static char32 buffer [3*3333+1];
+		if (str32len (word) > WORDLIST_MAX_WORD) return false;   // superfluous, because WordList_hasWord already checked; but safe
+		static char32 buffer [3*WORDLIST_MAX_WORD+1];
 		Longchar_genericize32 (word, buffer);
 		if (SortedSetOfString_lookUp (my userDictionary.get(), buffer) != 0)
 			return true;

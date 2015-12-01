@@ -230,10 +230,10 @@ static int compare (const char32 *word, const char32 *p) {
 	return 0;   // should not occur
 }
 
-static char32 buffer [3333+1];
+static char32 buffer [WORDLIST_MAX_WORD+1];
 
 bool WordList_hasWord (WordList me, const char32 *word) {
-	if (str32len (word) > 3333) return false;
+	if (str32len (word) > WORDLIST_MAX_WORD) return false;
 	Longchar_genericize32 (word, buffer);
 	if (! my length) my length = str32len (my string);
 	long p = my length / 2, d = p / 2;
