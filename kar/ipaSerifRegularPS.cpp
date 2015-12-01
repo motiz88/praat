@@ -43,6 +43,7 @@
  */
 
 const char * ipaSerifRegularPS [] = {
+#ifndef NO_GRAPHICS
 "% %!PS-AdobeFont-1.0: TeX-xipa10 001.001\n",
 "% % Filtered by type1fix.pl 0.06\n",
 "% %%EndComments\n",
@@ -2223,6 +2224,7 @@ const char * ipaSerifRegularPS [] = {
 "0000000000000000000000000000000000000000000000000000000000000000\n",
 "cleartomark\n",
 "\n",
+#endif
 0 };
 
 /* End of file ipaSerifRegularPS.cpp */
