@@ -1194,6 +1194,7 @@ autoSound KlattTable_to_Sound (KlattTable me, double samplingFrequency, int synt
 
 
 autoKlattTable KlattTable_createExample () {
+	#ifndef NO_EXAMPLES
 	long nrows = 1376;
 	struct klatt_params {
 		short p[40];
@@ -2591,6 +2592,10 @@ autoKlattTable KlattTable_createExample () {
 	} catch (MelderError) {
 		Melder_throw (U" KlattTable example not created.");
 	}
+	#else
+	autoKlattTable me;
+	return me;
+	#endif
 }
 
 autoKlattTable Table_to_KlattTable (Table me) {
