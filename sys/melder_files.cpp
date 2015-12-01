@@ -70,8 +70,10 @@ using namespace std;
 #include "melder.h"
 
 //#include "flac_FLAC_stream_encoder.h"
+#ifndef DISABLE_FLAC
 extern "C" int  FLAC__stream_encoder_finish (FLAC__StreamEncoder *);
 extern "C" void FLAC__stream_encoder_delete (FLAC__StreamEncoder *);
+#endif
 
 #if defined (macintosh)
 	#include <sys/stat.h>
@@ -911,10 +913,12 @@ void MelderFile_rewind (MelderFile me) {
 
 static void _MelderFile_close (MelderFile me, bool mayThrow) {
 	if (my outputEncoding == kMelder_textOutputEncoding_FLAC) {
+		#ifndef DISABLE_FLAC
 		if (my flacEncoder) {
 			FLAC__stream_encoder_finish (my flacEncoder);   // This already calls fclose! BUG: we cannot get any error messages out.
 			FLAC__stream_encoder_delete (my flacEncoder);
 		}
+		#endif
 	} else if (my filePointer) {
 		if (mayThrow) {
 			Melder_fclose (me, my filePointer);
@@ -926,7 +930,9 @@ static void _MelderFile_close (MelderFile me, bool mayThrow) {
 	my filePointer = nullptr;
 	my openForWriting = my openForReading = false;
 	my indent = 0;
+	#ifndef DISABLE_FLAC
 	my flacEncoder = nullptr;
+	#endif
 }
 void MelderFile_close (MelderFile me) {
 	_MelderFile_close (me, true);

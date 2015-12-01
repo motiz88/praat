@@ -39,10 +39,14 @@
 #include "melder.h"
 #include "abcio.h"
 #include "math.h"
+#ifndef DISABLE_FLAC
 #include "flac_FLAC_metadata.h"
 #include "flac_FLAC_stream_decoder.h"
 #include "flac_FLAC_stream_encoder.h"
+#endif
+#ifndef DISABLE_MP3
 #include "mp3.h"
+#endif
 #if defined (macintosh)
 
     #if useCarbon
@@ -212,6 +216,7 @@ void MelderFile_writeAudioFileHeader (MelderFile file, int audioFileType, long s
 					Melder_throw (U"NIST header not written.");
 				}
 			} break;
+			#ifndef DISABLE_FLAC
 			case Melder_FLAC: {
 				try {
 					FLAC__StreamEncoder *encoder = nullptr;
@@ -233,6 +238,7 @@ void MelderFile_writeAudioFileHeader (MelderFile file, int audioFileType, long s
 					Melder_throw (U"FLAC header not written.");
 				}
 			} break;
+			#endif
 			default: Melder_throw (U"Unknown audio file type ", audioFileType, U".");
 		}
 	} catch (MelderError) {
@@ -683,6 +689,7 @@ static void Melder_checkNistFile (FILE *f, int *numberOfChannels, int *encoding,
 	}
 }
 
+#ifndef DISABLE_FLAC
 static void Melder_checkFlacFile (MelderFile file, int *numberOfChannels, int *encoding,
 	double *sampleRate, long *startOfData, int32 *numberOfSamples)
 {
@@ -699,7 +706,8 @@ static void Melder_checkFlacFile (MelderFile file, int *numberOfChannels, int *e
 	if ((FLAC__uint64) *numberOfSamples != info -> total_samples)
 		Melder_throw (U"FLAC file too long.");
 }
-
+#endif
+#ifndef DISABLE_MP3
 static void Melder_checkMp3File (FILE *f, int *numberOfChannels, int *encoding,
 	double *sampleRate, long *startOfData, int32 *numberOfSamples)
 {
@@ -718,7 +726,7 @@ static void Melder_checkMp3File (FILE *f, int *numberOfChannels, int *encoding,
 	*startOfData = 0;   // meaningless
 	mp3f_delete (mp3f);
 }
-
+#endif
 int MelderFile_checkSoundFile (MelderFile file, int *numberOfChannels, int *encoding,
 	double *sampleRate, long *startOfData, int32 *numberOfSamples)
 {
@@ -746,17 +754,22 @@ int MelderFile_checkSoundFile (MelderFile file, int *numberOfChannels, int *enco
 		Melder_checkNistFile (f, numberOfChannels, encoding, sampleRate, startOfData, numberOfSamples);
 		return Melder_NIST;
 	}
+	#ifndef DISABLE_FLAC
 	if (strnequ (data, "fLaC", 4)) {
 		Melder_checkFlacFile (file, numberOfChannels, encoding, sampleRate, startOfData, numberOfSamples);
 		return Melder_FLAC;
 	}
+	#endif
+	#ifndef DISABLE_MP3
 	if (mp3_recognize (16, data)) {
 		Melder_checkMp3File (f, numberOfChannels, encoding, sampleRate, startOfData, numberOfSamples);
 		return Melder_MP3;
 	}
+	#endif
 	return 0;   // not a recognized sound file
 }
 
+#ifndef DISABLE_FLAC
 /* libFLAC works through callbacks, so we need a context struct. */
 
 typedef struct {
@@ -765,14 +778,18 @@ typedef struct {
 	long numberOfSamples;
 	double *channels [FLAC__MAX_CHANNELS];
 } MelderDecodeFlacContext;
+#endif
 
+#ifndef DISABLE_MP3
 /* The same goes for MP3 */
-
 typedef struct {
 	int numberOfChannels;
 	long numberOfSamples;
 	double *channels [2];
 } MelderDecodeMp3Context;
+#endif
+
+#ifndef DISABLE_FLAC
 
 static FLAC__StreamDecoderReadStatus Melder_DecodeFlac_read (const FLAC__StreamDecoder *decoder,
 	FLAC__byte buffer [], size_t *bytes, void *client_data)
@@ -816,6 +833,9 @@ static FLAC__StreamDecoderWriteStatus Melder_DecodeFlac_convert (const FLAC__Str
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
+#endif
+
+#ifndef DISABLE_MP3
 static void Melder_DecodeMp3_convert (const MP3F_SAMPLE *channels [MP3F_MAX_CHANNELS], long count, void *context) {
 	MelderDecodeMp3Context *c = (MelderDecodeMp3Context *) context;
 	const MP3F_SAMPLE *input;
@@ -828,7 +848,9 @@ static void Melder_DecodeMp3_convert (const MP3F_SAMPLE *channels [MP3F_MAX_CHAN
 		c -> channels [i] += count;
 	}
 }
+#endif
 
+#ifndef DISABLE_FLAC
 static void Melder_DecodeFlac_error (const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data) {
 	(void) decoder;
 	(void) client_data;
@@ -862,7 +884,9 @@ end:
 	if (result == 0)
 		Melder_throw (U"Error decoding FLAC file.");
 }
+#endif
 
+#ifndef DISABLE_MP3
 static void Melder_readMp3File (FILE *f, int numberOfChannels, double **buffer, long numberOfSamples) {
 	MelderDecodeMp3Context c;
 	int result = 0;
@@ -879,6 +903,7 @@ static void Melder_readMp3File (FILE *f, int numberOfChannels, double **buffer, 
 	if (result == 0)
 		Melder_throw (U"Error decoding MP3 file.");
 }
+#endif
 
 void Melder_readAudioToFloat (FILE *f, int numberOfChannels, int encoding, double **buffer, long numberOfSamples) {
 	try {
@@ -1228,16 +1253,20 @@ void Melder_readAudioToFloat (FILE *f, int numberOfChannels, int encoding, doubl
 					Melder_warning (U"File too small (", numberOfChannels, U"-channel 8-bit A-law).\nMissing samples set to zero.");
 				}
 				break;
+		#ifndef DISABLE_FLAC				
 			case Melder_FLAC_COMPRESSION_16:
 			case Melder_FLAC_COMPRESSION_24:
 			case Melder_FLAC_COMPRESSION_32:
 				Melder_readFlacFile (f, numberOfChannels, buffer, numberOfSamples);
 				break;
+		#endif
+		#ifndef DISABLE_MP3
 			case Melder_MPEG_COMPRESSION_16:
 			case Melder_MPEG_COMPRESSION_24:
 			case Melder_MPEG_COMPRESSION_32:
 				Melder_readMp3File (f, numberOfChannels, buffer, numberOfSamples);
 				break;
+		#endif
 			default:
 				Melder_throw (U"Unknown encoding ", encoding, U".");
 		}
@@ -1375,6 +1404,7 @@ void MelderFile_writeShortToAudio (MelderFile file, int numberOfChannels, int en
 				for (i = start; i < n; i += step)
 					binputr4LE (buffer [i] / 32768.0, f);
 			break;
+		#ifndef DISABLE_FLAC
 			case Melder_FLAC_COMPRESSION_16:
 			case Melder_FLAC_COMPRESSION_24:
 			case Melder_FLAC_COMPRESSION_32:
@@ -1387,7 +1417,9 @@ void MelderFile_writeShortToAudio (MelderFile file, int numberOfChannels, int en
 					if (! FLAC__stream_encoder_process_interleaved (file -> flacEncoder, samples, 1))
 						Melder_throw (U"Error encoding FLAC stream.");
 				}
-			break; case Melder_MULAW: case Melder_ALAW: default:
+			break;
+		#endif
+		case Melder_MULAW: case Melder_ALAW: default:
 				Melder_throw (U"Unknown encoding ", encoding, U".");
 		}
 	} catch (MelderError) {
@@ -1497,6 +1529,7 @@ void MelderFile_writeFloatToAudio (MelderFile file, int numberOfChannels, int en
 					}
 				}
 				break;
+		#ifndef DISABLE_FLAC
 			case Melder_FLAC_COMPRESSION_16:
 			case Melder_FLAC_COMPRESSION_24:
 			case Melder_FLAC_COMPRESSION_32:
@@ -1514,6 +1547,7 @@ void MelderFile_writeFloatToAudio (MelderFile file, int numberOfChannels, int en
 						Melder_throw (U"Error encoding FLAC stream.");
 				}
 				break;
+		#endif
 			case Melder_MULAW:
 			case Melder_ALAW:
 			default:

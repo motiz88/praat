@@ -399,7 +399,11 @@ struct structMelderFile {
 	bool openForReading, openForWriting, verbose, requiresCRLF;
 	unsigned long outputEncoding;
 	int indent;
+#ifndef DISABLE_FLAC	
 	struct FLAC__StreamEncoder *flacEncoder;
+#else
+	void *flacEncoder;
+#endif
 };
 typedef struct structMelderFile *MelderFile;
 

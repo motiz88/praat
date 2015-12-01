@@ -240,6 +240,7 @@ bool MelderAudio_stopWasExplicit () {
 static bool flush () {
 	struct MelderPlay *me = & thePlay;
 	if (my usePortAudio) {
+		#ifndef DISABLE_PORTAUDIO
 		if (my stream) {
 			#ifdef linux
 
@@ -333,6 +334,7 @@ static bool flush () {
 			Pa_CloseStream (my stream);
 			my stream = nullptr;
 		}
+		#endif
 	#ifdef HAVE_PULSEAUDIO
 	} else if (my usePulseAudio) {
 		if (my pulseAudio.mainloop) {
