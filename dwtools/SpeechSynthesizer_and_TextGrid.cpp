@@ -1,3 +1,4 @@
+#ifndef DISABLE_ESPEAK
 /* SpeechSynthesizer_and_TextGrid.cpp
  *
  * Copyright (C) 2011-2012, 2015 David Weenink
@@ -778,3 +779,5 @@ autoTable TextGrids_to_Table_textAlignmentment (TextGrid target, long ttier, Tex
 }
 
 // End of file TextGrid_and_SpeechSynthesizer.cpp
+
+#endif

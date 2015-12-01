@@ -17,6 +17,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#ifndef DISABLE_ESPEAK
+
 #define ooSTRUCT SpeechSynthesizerVoice
 oo_DEFINE_CLASS (SpeechSynthesizerVoice, Daata)
 	oo_STRING (d_v_name)
@@ -101,5 +103,7 @@ oo_DEFINE_CLASS (SpeechSynthesizer, Daata)
 
 oo_END_CLASS (SpeechSynthesizer)
 #undef ooSTRUCT
+
+#endif
 
 /* End of file SpeechSynthesizer_def.h */

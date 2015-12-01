@@ -1,5 +1,7 @@
 #ifndef _SpeechSynthesizer_h_
 #define _SpeechSynthesizer_h_
+
+#ifndef DISABLE_ESPEAK
 /* SpeechSynthesizer.h
  *
  * Copyright (C) 2011-2013 David Weenink, 2015 Paul Boersma
@@ -59,6 +61,7 @@ autoSound SpeechSynthesizer_to_Sound (SpeechSynthesizer me, const char32 *text, 
 
 void SpeechSynthesizer_playText (SpeechSynthesizer me, const char32 *text);
 
+#endif
 
 /* End of file SpeechSynthesizer.h */
 #endif

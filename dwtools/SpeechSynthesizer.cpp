@@ -21,6 +21,8 @@
 	djmw 20111214
 */
 
+#ifndef DISABLE_ESPEAK
+
 #include "SpeechSynthesizer.h"
 #include "Strings_extensions.h"
 #include "translate.h"
@@ -557,3 +559,5 @@ autoSound SpeechSynthesizer_to_Sound (SpeechSynthesizer me, const char32 *text, 
 }
 
 /* End of file SpeechSynthesizer.cpp */
+
+#endif

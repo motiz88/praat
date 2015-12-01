@@ -110,8 +110,10 @@
 #include "Sounds_to_DTW.h"
 #include "Spectrum_extensions.h"
 #include "Spectrogram.h"
+#ifndef DISABLE_ESPEAK
 #include "SpeechSynthesizer.h"
 #include "SpeechSynthesizer_and_TextGrid.h"
+#endif
 #include "SSCP.h"
 #include "Strings_extensions.h"
 #include "SVD.h"
@@ -6408,8 +6410,9 @@ DIRECT (Spectrum_to_Cepstrum)
 	}
 END
 
-/************* SpeechSynthesizer *************************************************/
+#ifndef DISABLE_ESPEAK
 
+/************* SpeechSynthesizer *************************************************/
 DIRECT (SpeechSynthesizer_help)
 	Melder_help (U"SpeechSynthesizer");
 END
@@ -6594,6 +6597,8 @@ DO
         GET_INTEGER (U"To interval number"), silenceThreshold, minSilenceDuration, minSoundingDuration, trimDuration);
     praat_new (thee.move(), s -> name, U"_aligned");
 END
+
+#endif
 
 /************* Spline *************************************************/
 
@@ -8086,6 +8091,7 @@ DO
 	}
 END
 
+#ifndef DISABLE_ESPEAK
 FORM (TextGrids_to_Table_textAlignmentment, U"TextGrids: To Table (text alignment)", 0)
 	NATURAL (U"Target tier", U"1")
 	NATURAL (U"Source tier", U"1")
@@ -8116,6 +8122,7 @@ DO
  	Melder_assert (tg1 && tg2 && ect);
 	praat_new (TextGrids_to_Table_textAlignmentment (tg1, GET_INTEGER (U"Target tier"), tg2, GET_INTEGER (U"Source tier"), ect), tg1 -> name, U"_", tg2 -> name);
 END
+#endif
 
 FORM (TextGrid_setTierName, U"TextGrid: Set tier name", U"TextGrid: Set tier name...")
 	NATURAL (U"Tier number:", U"1")
@@ -8388,7 +8395,11 @@ void praat_uvafon_David_init () {
 		classIndex, classKlattTable,
 		classPermutation, classISpline, classLegendreSeries,
 		classMelFilter, classMelSpectrogram, classMSpline, classPattern, classPCA, classPolynomial, classRoots,
-		classSimpleString, classStringsIndex, classSpeechSynthesizer, classSPINET, classSSCP,
+		classSimpleString, classStringsIndex,
+		#ifndef DISABLE_ESPEAK
+		classSpeechSynthesizer, 
+		#endif
+		classSPINET, classSSCP,
 		classSVD, nullptr);
 
 	VowelEditor_prefs ();
@@ -8411,7 +8422,9 @@ void praat_uvafon_David_init () {
 	praat_addMenuCommand (U"Objects", U"New", U"Create Sound from gamma-tone...", U"Create Sound from tone complex...", praat_DEPTH_1 | praat_HIDDEN, DO_Sound_createFromGammaTone);
 	praat_addMenuCommand (U"Objects", U"New", U"Create Sound from Shepard tone...", U"Create Sound from gammatone...", 1, DO_Sound_createFromShepardTone);
 	praat_addMenuCommand (U"Objects", U"New", U"Create Sound from VowelEditor...", U"Create Sound from Shepard tone...", praat_DEPTH_1, DO_VowelEditor_create);
+#ifndef DISABLE_ESPEAK	
 	praat_addMenuCommand (U"Objects", U"New", U"Create SpeechSynthesizer...", U"Create Sound from VowelEditor...", praat_DEPTH_1, DO_SpeechSynthesizer_create);
+#endif
 	praat_addMenuCommand (U"Objects", U"New", U"Create formant table (Pols & Van Nierop 1973)", U"Create Table...", 1, DO_Table_createFromPolsVanNieropData);
 	praat_addMenuCommand (U"Objects", U"New", U"Create formant table (Peterson & Barney 1952)", U"Create Table...", 1, DO_Table_createFromPetersonBarneyData);
 	praat_addMenuCommand (U"Objects", U"New", U"Create formant table (Weenink 1985)", U"Create formant table (Peterson & Barney 1952)", 1, DO_Table_createFromWeeninkData);
@@ -9048,6 +9061,7 @@ void praat_uvafon_David_init () {
 	praat_addAction1 (classSpectrum, 0, U"To Cepstrum", U"To Spectrogram", 1, DO_Spectrum_to_Cepstrum);
 	praat_addAction1 (classSpectrum, 0, U"To PowerCepstrum", U"To Cepstrum", 1, DO_Spectrum_to_PowerCepstrum);
 
+#ifndef DISABLE_ESPEAK
 	praat_addAction1 (classSpeechSynthesizer, 0, U"SpeechSynthesizer help", 0, 0, DO_SpeechSynthesizer_help);
 	praat_addAction1 (classSpeechSynthesizer, 0, U"Play text...", 0, 0, DO_SpeechSynthesizer_playText);
 	praat_addAction1 (classSpeechSynthesizer, 0, U"To Sound...", 0, 0, DO_SpeechSynthesizer_to_Sound);
@@ -9061,7 +9075,8 @@ void praat_uvafon_David_init () {
 
 	praat_addAction3 (classSpeechSynthesizer, 1, classSound, 1, classTextGrid, 1, U"To TextGrid (align)...", 0, 0, DO_SpeechSynthesizer_and_Sound_and_TextGrid_align);
     praat_addAction3 (classSpeechSynthesizer, 1, classSound, 1, classTextGrid, 1, U"To TextGrid (align,trim)...", 0, 0, DO_SpeechSynthesizer_and_Sound_and_TextGrid_align2);
-
+#endif
+    
 	praat_addAction1 (classSSCP, 0, U"SSCP help", 0, 0, DO_SSCP_help);
 	praat_TableOfReal_init2 (classSSCP);
 	praat_removeAction (classSSCP, nullptr, nullptr, U"Append");
@@ -9176,9 +9191,12 @@ void praat_uvafon_David_init () {
 	praat_addAction1 (classTextGrid, 1, U"Set tier name...", U"Remove tier...", 1, DO_TextGrid_setTierName);
 	praat_addAction1 (classTextGrid, 0, U"Replace interval text...", U"Set interval text...", 2, DO_TextGrid_replaceIntervalTexts);
 	praat_addAction1 (classTextGrid, 0, U"Replace point text...", U"Set point text...", 2, DO_TextGrid_replacePointTexts);
+
+#ifndef DISABLE_ESPEAK	
 	praat_addAction1 (classTextGrid, 2, U"To Table (text alignment)...", U"Extract part...", 0, DO_TextGrids_to_Table_textAlignmentment);
 	praat_addAction2 (classTextGrid, 2, classEditCostsTable, 1, U"To Table (text alignment)...", 0, 0, DO_TextGrids_and_EditCostsTable_to_Table_textAlignmentment);
-
+#endif
+	
 	INCLUDE_MANPAGES (manual_dwtools_init)
 	INCLUDE_MANPAGES (manual_Permutation_init)
 

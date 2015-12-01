@@ -1,5 +1,6 @@
 #ifndef _SpeechSynthesizer_and_TextGrid_h_
 #define _SpeechSynthesizer_and_TextGrid_h_
+
 /* SpeechSynthesizer_and_TextGrid.h
  *
  * Copyright (C) 2011-2012 David Weenink
@@ -22,7 +23,7 @@
 /*
 	djmw 20111214
 */
-
+#ifndef DISABLE_ESPEAK
 #include "SpeechSynthesizer.h"
 #include "TextGrid_extensions.h"
 #include "EditDistanceTable.h"
@@ -45,5 +46,6 @@ autoTable TextGrids_to_Table_textAlignmentment (TextGrid target, long ttier, Tex
 /* For testing purposes only */
 autoTextGrid TextGrid_and_IntervalTier_patch (TextGrid me, IntervalTier thee, const char32 *patchLabel, double precision);
 autoTextGrid TextGrid_and_IntervalTier_cutPartsMatchingLabel (TextGrid me, IntervalTier thee, const char32 *label, double precision);
+#endif
 
 #endif // _SpeechSynthesizer_and_TextGrid_h_
