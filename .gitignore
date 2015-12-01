@@ -22,6 +22,4 @@ makefile.defs
 # Executables
 praat
 Praat
-Praat.exe
-praat.bc
-praat.js
+build/
