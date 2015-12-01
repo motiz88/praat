@@ -1,0 +1,21 @@
+# File: makefile.defs.emscripten
+
+# System: Emscripten
+# Moti Zilberman, 30 November 2015
+
+CC = emcc -std=gnu99
+
+CXX = em++ -std=c++11
+
+CFLAGS = -D_FILE_OFFSET_BITS=64 -DUNIX -Dlinux -DNO_GRAPHICS -Werror=missing-prototypes -Werror=implicit -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O2 -DDISABLE_FLAC -DDISABLE_MP3 -DDISABLE_MANPAGES -DDISABLE_KNN -DDISABLE_FON -DDISABLE_PORTAUDIO
+
+CXXFLAGS = $(CFLAGS) -Wshadow
+
+LINK = em++
+
+EXECUTABLE = build/praat.bc
+
+ICON =
+MAIN_ICON =
+RANLIB = emranlib
+AR = emar
