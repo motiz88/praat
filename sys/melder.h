@@ -1178,8 +1178,11 @@ void MelderGui_create (/* GuiWindow */ void *parent);
 /*
 	'parent' is the top-level widget returned by GuiAppInitialize.
 */
-
+#ifndef BATCH_ONLY
 extern bool Melder_batch;   // true if run from the batch or from an interactive command-line interface
+#else
+static const bool Melder_batch = true;
+#endif
 extern bool Melder_backgrounding;   // true if running a script
 extern bool Melder_consoleIsAnsi;
 extern bool Melder_asynchronous;   // true if specified by the "asynchronous" directive in a script

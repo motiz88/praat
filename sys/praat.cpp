@@ -1180,7 +1180,9 @@ void praat_init (const char32 *title, int argc, char **argv)
 	weWereStartedFromTheCommandLine |= foundTheRunOption;   // some external system()-like commands don't make isatty return true, so we have to help
 
 	const bool thereIsAFileNameInTheArgumentList = ( praatP.argumentNumber < argc );
+	#ifndef BATCH_ONLY
 	Melder_batch = weWereStartedFromTheCommandLine && thereIsAFileNameInTheArgumentList && ! foundTheOpenOption;
+	#endif
 	const bool fileNamesCameInByDropping = ( thereIsAFileNameInTheArgumentList && ! weWereStartedFromTheCommandLine );   // doesn't happen on the Mac
 	praatP.userWantsToOpen = foundTheOpenOption || fileNamesCameInByDropping;
 
@@ -1198,14 +1200,18 @@ void praat_init (const char32 *title, int argc, char **argv)
 	}
 	//Melder_casual (U"Script file name <<", theCurrentPraatApplication -> batchName.string, U">>");
 
+	#ifndef BATCH_ONLY
 	Melder_batch |= !! thePraatStandAloneScriptText;
+	#endif
 
 	/*
 	 * Running the Praat shell from the command line:
 	 *    praat -
 	 */
+	#ifndef BATCH_ONLY
 	Melder_batch |= praatP.hasCommandLineInput;
-
+	#endif
+	
 	praatP.title = Melder_dup (title && title [0] ? title : U"Praat");
 
 	theCurrentPraatApplication -> batch = Melder_batch;

@@ -53,8 +53,9 @@
 #include "melder_enums.h"
 
 /********** Exported variables. **********/
-
+#ifndef BATCH_ONLY
 bool Melder_batch;   // don't we have a GUI?- Set once at application start-up
+#endif
 bool Melder_backgrounding;   // are we running a script?- Set and unset dynamically
 bool Melder_asynchronous;
 int32 Melder_systemVersion;
