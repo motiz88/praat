@@ -85,7 +85,9 @@
 #include "Eigen_and_SSCP.h"
 #include "Eigen_and_TableOfReal.h"
 #include "Excitations.h"
+#ifndef DISABLE_ESPEAK
 #include "espeakdata_FileInMemory.h"
+#endif
 #include "FileInMemory.h"
 #include "FilterBank.h"
 #include "Formula.h"
@@ -2773,6 +2775,7 @@ DO
 	praat_new (me.move(), GET_STRING (U"Name"));
 END
 
+#ifndef DISABLE_ESPEAK
 FORM (FilesInMemory_createCopyFromFilesInMemory, U"", 0)
 	OPTIONMENU (U"Espeakdata", 5)
 	OPTION (U"phons")
@@ -2809,6 +2812,7 @@ DO
 		praat_new (s.move(), U"espeakdata_variants_names");
 	}
 END
+#endif
 
 FORM (FilesInMemory_showAsCode, U"FilesInMemory: Show as code", 0)
 	WORD (U"Name", U"example")
@@ -8403,9 +8407,9 @@ void praat_uvafon_David_init () {
 		classSVD, nullptr);
 
 	VowelEditor_prefs ();
-
+#ifndef DISABLE_ESPEAK
 	espeakdata_praat_init ();
-
+#endif
 	praat_addMenuCommand (U"Objects", U"Technical", U"Report floating point properties", U"Report integer properties", 0, DO_Praat_ReportFloatingPointProperties);
 	praat_addMenuCommand (U"Objects", U"Goodies", U"Get TukeyQ...", 0, praat_HIDDEN, DO_Praat_getTukeyQ);
 	praat_addMenuCommand (U"Objects", U"Goodies", U"Get invTukeyQ...", 0, praat_HIDDEN, DO_Praat_getInvTukeyQ);
@@ -8445,7 +8449,9 @@ void praat_uvafon_David_init () {
 	praat_addMenuCommand (U"Objects", U"New", U"Create Polygon (random vertices)...", 0, praat_HIDDEN, DO_Polygon_createFromRandomVertices);
 	praat_addMenuCommand (U"Objects", U"New", U"FilesInMemory", 0, praat_HIDDEN, 0);
 		praat_addMenuCommand (U"Objects", U"New", U"Create FileInMemory...", 0, praat_DEPTH_1 + praat_HIDDEN, DO_FileInMemory_create);
+#ifndef DISABLE_ESPEAK		
 		praat_addMenuCommand (U"Objects", U"New", U"Create copy from FilesInMemory...", 0, praat_DEPTH_1 + praat_HIDDEN, DO_FilesInMemory_createCopyFromFilesInMemory);
+#endif
 		praat_addMenuCommand (U"Objects", U"New", U"Create FilesInMemory from directory contents...", 0, praat_DEPTH_1 + praat_HIDDEN, DO_FilesInMemory_createFromDirectoryContents);
 	praat_addMenuCommand (U"Objects", U"Open", U"Read Sound from raw 16-bit Little Endian file...", U"Read from special sound file", 1,
 	                      DO_Sound_readFromRawFileLE);
@@ -9196,7 +9202,7 @@ void praat_uvafon_David_init () {
 	praat_addAction1 (classTextGrid, 2, U"To Table (text alignment)...", U"Extract part...", 0, DO_TextGrids_to_Table_textAlignmentment);
 	praat_addAction2 (classTextGrid, 2, classEditCostsTable, 1, U"To Table (text alignment)...", 0, 0, DO_TextGrids_and_EditCostsTable_to_Table_textAlignmentment);
 #endif
-	
+
 	INCLUDE_MANPAGES (manual_dwtools_init)
 	INCLUDE_MANPAGES (manual_Permutation_init)
 
