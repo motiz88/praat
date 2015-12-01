@@ -27,7 +27,7 @@ $(EXECUTABLE): main/main_Praat.o $(MAIN_ICON) fon/libfon.a \
 		external/espeak/libespeak.a external/portaudio/libportaudio.a \
 		external/flac/libflac.a external/mp3/libmp3.a \
 		external/glpk/libglpk.a external/gsl/libgsl.a
-	$(LINK) -o $(EXECUTABLE) $^ $(LIBS)
+	$(LINK) -o $(EXECUTABLE) $+ $(LIBS)
 
 external/gsl/libgsl.a:	
 	$(MAKE) -C external/gsl
