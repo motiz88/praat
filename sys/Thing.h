@@ -422,6 +422,21 @@ public:
 		#endif
 		other.zero();
 	}
+	// Allow construction from unique_ptr
+	_Thing_auto<T> (std::unique_ptr<T> other) noexcept : ptr (other.release()) {
+		#if _Thing_auto_DEBUG
+			if (our ptr)
+				fprintf (stderr, "move constructor %p from unique_ptr<same class> %s\n",
+					our ptr, Melder_peek32to8 (our ptr -> classInfo -> className));
+		#endif
+	}
+	template <class Y> _Thing_auto<T> (std::unique_ptr<Y> other) noexcept : ptr (other.release()) {
+		#if _Thing_auto_DEBUG
+			if (our ptr)
+				fprintf (stderr, "move constructor %p from unique_ptr<other class> %s\n",
+					our ptr, Melder_peek32to8 (our ptr -> classInfo -> className));
+		#endif
+	}	
 	/*
 	 * The compiler should treat assignments from _Thing_auto r-values, as in
 	 *    extern autoPitch Pitch_create (...);
