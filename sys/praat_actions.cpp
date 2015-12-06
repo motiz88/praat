@@ -132,8 +132,12 @@ void praat_addAction4 (ClassInfo class1, int n1, ClassInfo class2, int n2, Class
 		if (after) {   // search for existing command with same selection
 			long found = lookUpMatchingAction (class1, class2, class3, class4, after);
 			if (found == 0)
+				#ifndef WORKAROUND_ACTION_POSITIONING
 				Melder_throw (U"The action command \"", title, U"\" cannot be put after \"", after, U"\",\n"
 					U"because the latter command does not exist.");
+				else
+					position = theActions -> size;
+				#endif
 			position = found + 1;   // after 'after'
 		} else {
 			position = theActions -> size + 1;   // at end

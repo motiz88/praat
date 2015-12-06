@@ -132,10 +132,14 @@ GuiMenuItem praat_addMenuCommand (const char32 *window, const char32 *menu, cons
 		if (found) {
 			position = found + 1;   // after 'after'
 		} else {
-			Melder_flushError (U"praat_addMenuCommand: the command \"", title, U"\" cannot be put after \"", after, U"\",\n"
+			#ifndef WORKAROUND_ACTION_POSITIONING
+				Melder_flushError (U"praat_addMenuCommand: the command \"", title, U"\" cannot be put after \"", after, U"\",\n"
 				U"in the menu \"", menu, U"\" in the window \"", window, U"\"\n"
 				U"because the latter command does not exist.");
-			return nullptr;
+				return nullptr;				
+			else
+				position = theCommands -> size + 1;
+			#endif
 		}
 	} else {
 		position = theCommands -> size + 1;   // at end
