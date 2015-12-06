@@ -33,6 +33,8 @@
 
 //#include <string>
 
+#include <memory>
+
 #define _Thing_auto_DEBUG  0
 
 /*
@@ -483,6 +485,12 @@ public:
 	 */
 	template <class Y> _Thing_auto<Y> static_cast_move () {
 		return _Thing_auto<Y> (static_cast<Y*> (our transfer()));
+	}
+
+	template <class Y>
+	operator std::unique_ptr<Y>() &&
+	{
+		return std::unique_ptr<Y>(static_cast<Y*> (our transfer()));
 	}
 };
 
