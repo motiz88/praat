@@ -7,7 +7,7 @@ CC = emcc -std=gnu99
 
 CXX = em++ -std=c++11
 
-CFLAGS = -DUNIX -Dlinux -DNO_GRAPHICS -Werror=missing-prototypes -Werror=implicit -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O2 -DDISABLE_MANPAGES -Dpraat_MAXNUM_OBJECTS=100 -DBATCH_ONLY -s DISABLE_EXCEPTION_CATCHING=0 -DDISABLE_ESPEAK -DNO_MANUAL -DDISABLE_EEG -DDISABLE_GRAM -DDISABLE_FFNET -DDISABLE_ARTSYNTH -DDISABLE_DAVID -DDISABLE_KNN -DWORDLIST_MAX_WORD=33 -DNO_EXAMPLES
+CFLAGS = -DUNIX -Dlinux -DNO_GRAPHICS -Werror=missing-prototypes -Werror=implicit -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O2 -DDISABLE_MANPAGES -Dpraat_MAXNUM_OBJECTS=100 -DBATCH_ONLY -s DISABLE_EXCEPTION_CATCHING=0 -DDISABLE_ESPEAK -DNO_MANUAL -DDISABLE_EEG -DDISABLE_GRAM -DDISABLE_FFNET -DDISABLE_ARTSYNTH -DDISABLE_KNN -DWORDLIST_MAX_WORD=33 -DNO_EXAMPLES -DWORKAROUND_ACTION_POSITIONING
 
 CXXFLAGS = $(CFLAGS) -Wshadow
 
@@ -32,19 +32,34 @@ PRAAT_MODULES = fon/libfon.a \
 
 all:
 
-platform_postbuild: build/praat.html
+platform_postbuild: build/praat.js build/praat.html
 
 JS_LIBRARY_FILES = $(wildcard js/lib*.js)
 JS_LIBS = $(patsubst %,--js-library %,$(JS_LIBRARY_FILES))
 
-build/praat.html: $(EXECUTABLE) $(wildcard js/*.js) $(wildcard js/*.json)
+build/praat.js: $(EXECUTABLE) $(wildcard js/*.js) $(wildcard js/*.json) $(wildcard js/*.cpp) $(wildcard js/*.h)
 	$(shell mkdir build)
-	$(CC) -O1 $(EXECUTABLE) -o build/praat.html --proxy-to-worker -s ALLOW_MEMORY_GROWTH=1 -s DEMANGLE_SUPPORT=1 \
+	$(CXX) $(CXXFLAGS) \
+		-Isys/ -Inum/ -Ifon/ \
+		-Wno-error=missing-prototypes \
+		--bind -O2 $(EXECUTABLE) -o build/praat.js -s ALLOW_MEMORY_GROWTH=1 -s DEMANGLE_SUPPORT=1 \
+		-s TOTAL_MEMORY=36000000 \
 		-s DISABLE_EXCEPTION_CATCHING=0 \
 		--pre-js js/pre.js \
 		--post-js js/post.js \
 		-s EXPORTED_FUNCTIONS=@js/EXPORTED_FUNCTIONS.json \
-		$(JS_LIBS)
+		-s EXPORTED_RUNTIME_METHODS=@js/EXPORTED_RUNTIME_METHODS.json \
+		-s NO_EXIT_RUNTIME=1 \
+		-s NODE_STDOUT_FLUSH_WORKAROUND=0 \
+		-s INVOKE_RUN=0 \
+		-s EXCEPTION_DEBUG=0 \
+		-s ASSERTIONS=0 \
+		$(JS_LIBS) \
+		$(wildcard js/*.cpp) 
+
+build/praat.html: js/praat.html
+	cp js/praat.html build/praat.html
 
 platform_clean:
 	$(RM) build/praat.html build/praat.js build/praat.html.mem build/praat.asm.js
+
