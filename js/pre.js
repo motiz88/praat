@@ -1,7 +1,16 @@
-if (typeof(Module) === "undefined") Module = {};
-Module["arguments"] = ['--run', 'script.praat'];
-Module["preRun"] = function() {
-	FS.writeFile('script.praat', ['Create Sound as pure tone: "tone", 1, 0, 0.4, 44100, 440, 0.2, 0.01, 0.01',
-'To Pitch: 0, 75, 600',
-'Get mean: 0, 0, "Hertz"'].join('\n'));
-};
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory();
+    } else {
+        // Browser globals (root is window)
+        root.PraatModule = factory();
+  }
+}(this, function () {
+	return function(Module) {
+		Module = Module || {};
